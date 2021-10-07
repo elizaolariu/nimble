@@ -8,8 +8,10 @@ import { NG_VALUE_ACCESSOR, CheckboxControlValueAccessor } from '@angular/forms'
  * https://github.com/angular/angular/blob/master/packages/forms/src/directives/checkbox_value_accessor.ts#L42
  */
 @Directive({
+    // selector:
+    //   'nimble-checkbox[formControlName],nimble-checkbox[formControl],nimble-checkbox[ngModel]',
     selector:
-      'nimble-checkbox[formControlName],nimble-checkbox[formControl],nimble-checkbox[ngModel]',
+      'nimble-checkbox',
     // The following host metadata is duplicated from CheckboxControlValueAccessor
     // eslint-disable-next-line @angular-eslint/no-host-metadata-property
     host: { '(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()' },

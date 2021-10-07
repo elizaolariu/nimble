@@ -13,11 +13,20 @@ export class LoginComponent {
     public theme: NimbleTheme = NimbleTheme.Light;
     public themes = NimbleTheme;
     public buttonAppearance = ButtonAppearance;
+    public value = true;
 
     public constructor(private readonly formBuilder: FormBuilder) {
         this.loginForm = this.formBuilder.group({
             username: [''],
             password: ['', Validators.required]
         });
+    }
+
+    public valueChanged(): void {
+        console.log('valueChanged');
+    }
+    
+    public focusout(): void {
+        console.log('focusout');
     }
 }
