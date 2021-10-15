@@ -60,7 +60,7 @@ jobs:
           exitOnceUploaded: true # Do not wait for test results
           exitZeroOnChanges: true # Option to prevent the workflow from failing
 
-                # Publish site to GitHub Pages (only from main)
+      # Publish site to GitHub Pages (only from main)
       - name: Install ruby
         if: startsWith(github.ref, 'refs/heads/main')
         uses: actions/setup-ruby@v1
@@ -153,6 +153,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm install --global npm@7
       - run: npm ci
+      - run: npm run build
 
       # Run Lighthouse audit
       - name: Performance Audit with Lighthouse CI
