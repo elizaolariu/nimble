@@ -23,9 +23,8 @@ jobs:
       # Install dependencies
       - uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: '16'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install --global npm@7
       - run: npm ci
 
       # Build
@@ -39,6 +38,32 @@ jobs:
           path: |
             packages/**/*.tgz
             angular-workspace/**/*.tgz
+          if-no-files-found: error
+      
+      - uses: actions/upload-artifact@v2
+        with:
+          name: angular-site
+          path: angular-workspace/dist/example-client-app
+          if-no-files-found: error
+        
+      - uses: actions/upload-artifact@v2
+        with:
+          name: tokens-dist
+          path: |
+            packages/nimble-tokens/dist-icons
+            packages/nimble-tokens/dist-icons-esm
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: components-dist
+          path: packages/nimble-components/dist
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: nimble-angular-dist
+          path: angular-workspace/dist/ni/nimble-angular
           if-no-files-found: error
 
       # Publish
@@ -107,28 +132,64 @@ jobs:
 
   lint:
     runs-on: ubuntu-18.04
+    needs: [build]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: '16'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install --global npm@7
       - run: npm ci
+
+      - name: Download angular components dist
+        uses: actions/download-artifact@v2
+        with:
+          name: nimble-angular-dist
+          path: angular-workspace/dist/ni/nimble-angular
+
+      - name: Download nimble components dist
+        uses: actions/download-artifact@v2
+        with:
+          name: components-dist
+          path: packages/nimble-components/dist
+
+      - name: Download nimble tokens dist
+        uses: actions/download-artifact@v2
+        with:
+          name: tokens-dist
+          path: packages/nimble-tokens
 
       # Lint
       - run: npm run lint
   
   test:
     runs-on: ubuntu-18.04
+    needs: [build]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: '16'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install --global npm@7
       - run: npm ci
+
+      - name: Download angular components dist
+        uses: actions/download-artifact@v2
+        with:
+          name: nimble-angular-dist
+          path: angular-workspace/dist/ni/nimble-angular
+
+      - name: Download nimble components dist
+        uses: actions/download-artifact@v2
+        with:
+          name: components-dist
+          path: packages/nimble-components/dist
+
+      - name: Download nimble tokens dist
+        uses: actions/download-artifact@v2
+        with:
+          name: tokens-dist
+          path: packages/nimble-tokens
 
       # Test
       - run: npm run test
@@ -145,15 +206,20 @@ jobs:
 
   lighthouse:
     runs-on: ubuntu-18.04
+    needs: [build]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: '16'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install --global npm@7
       - run: npm ci
-      - run: npm run build
+      
+      - name: Download angular example site
+        uses: actions/download-artifact@v2
+        with:
+          name: angular-site
+          path: angular-workspace/dist/example-client-app
 
       # Run Lighthouse audit
       - name: Performance Audit with Lighthouse CI
