@@ -5,8 +5,6 @@ on:
   push:
     branches:
       - '*'
-    tags:
-      - 'v*'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -32,7 +30,7 @@ jobs:
 
       # Build
       - run: npm run build
-
+    
       # Pack
       - run: npm run pack
       - uses: actions/upload-artifact@v2
@@ -42,22 +40,6 @@ jobs:
             packages/**/*.tgz
             angular-workspace/**/*.tgz
           if-no-files-found: error
-
-      # Lint
-      - run: npm run lint
-
-      # Test
-      - run: npm run test
-
-      # Check Changelog
-      - run: npm run check
-
-      - name: Validate no changes to tracked files
-        run: |
-          echo print files with changes:
-          git diff-index --ignore-space-at-eol --stat HEAD
-          echo exit with error if there are changes.
-          git diff-index --quiet --ignore-space-at-eol --stat HEAD
 
       # Publish
       - name: Set Git User
@@ -78,13 +60,7 @@ jobs:
           exitOnceUploaded: true # Do not wait for test results
           exitZeroOnChanges: true # Option to prevent the workflow from failing
 
-      # Run Lighthouse audit
-      - name: Performance Audit with Lighthouse CI
-        run: npm run performance
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-
-      # Publish site to GitHub Pages (only from main)
+                # Publish site to GitHub Pages (only from main)
       - name: Install ruby
         if: startsWith(github.ref, 'refs/heads/main')
         uses: actions/setup-ruby@v1
@@ -128,3 +104,58 @@ jobs:
             git commit -m "applying package lock updates [skip ci]"
             git push --set-upstream origin main
           fi
+
+  lint:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install --global npm@7
+      - run: npm ci
+
+      # Lint
+      - run: npm run lint
+  
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install --global npm@7
+      - run: npm ci
+
+      # Test
+      - run: npm run test
+
+      # Check Changelog
+      - run: npm run check
+
+      - name: Validate no changes to tracked files
+        run: |
+          echo print files with changes:
+          git diff-index --ignore-space-at-eol --stat HEAD
+          echo exit with error if there are changes.
+          git diff-index --quiet --ignore-space-at-eol --stat HEAD
+
+  lighthouse:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install --global npm@7
+      - run: npm ci
+
+      # Run Lighthouse audit
+      - name: Performance Audit with Lighthouse CI
+        run: npm run performance
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
