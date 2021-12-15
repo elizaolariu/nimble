@@ -8,10 +8,6 @@ The menu-button represents a logical connection between a button and an openable
 
 ### Use Cases
 - Creating an optional or hidden menu for application interaction which is activated by a button
-
-### Non-goals
-- Creating a static menu
-- Creating a navigation menu of links
   
 ### Features
 - Sets appropriate ARIA properties on the associated button and menu, such as aria-haspopup and aria-expanded
