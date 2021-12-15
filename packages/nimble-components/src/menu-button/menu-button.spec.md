@@ -28,13 +28,14 @@ This component also potentially duplicates a lot of the work done on the [select
 
 ### Prior Art/Examples
 
+- [Fluent - contextual menu button](https://developer.microsoft.com/en-us/fluentui#/controls/web/button)
 - [Angular Material - menu](https://material.angular.io/components/menu/overview)
 - [Material Design - dropdown menu](https://material.io/components/menus#dropdown-menu)
 - [ReachUI - menu button](https://reach.tech/menu-button/)
 - [Atlassian - dropdown menu](https://atlaskit.atlassian.com/packages/core/dropdown-menu)
 - [Ant Design - dropdown](https://ant.design/components/dropdown/)
-- [Inclusive Components - menu buttons]()https://inclusive-components.design/menus-menu-buttons/
-- [MUI - ClickAwayListener](https://mui.com/api/click-away-listener/).
+- [Inclusive Components - menu buttons](https://inclusive-components.design/menus-menu-buttons/)
+- [MUI - ClickAwayListener](https://mui.com/api/click-away-listener/)
 
 ---
 
@@ -52,6 +53,8 @@ Potential ideas:
 
 This option would essentially just introduce a new attribute on a button to associate it with a menu.s
  
+---
+ 
 ```
 <menu-button>
 
@@ -63,6 +66,8 @@ This option would essentially just introduce a new attribute on a button to asso
 ```
  
 This option would add a new slot to a button to contain a menu to display when the button is clicked.  Default slot content would be displayed on the button.
+
+---
 
 ```
 <menu-button>
