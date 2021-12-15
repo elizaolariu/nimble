@@ -47,7 +47,7 @@ Potential ideas:
 <menu id="id">…</menu>
 ```
 
-This option would essentially just introduce a new attribute on a button to associate it with a menu.s
+This option would essentially just introduce a new attribute on a button to associate it with a menu.
  
 ---
  
