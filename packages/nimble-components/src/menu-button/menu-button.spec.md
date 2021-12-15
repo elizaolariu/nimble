@@ -1,11 +1,13 @@
-# Button & Anchor
+# Menu Button
 
 ## Overview
 
-The menu-button represents a logical connection between a button and an openable menu, for the common use-case of an interaction menu in an application.  This allows for stronger ARIA semantics than using a normal button to open a menu.
+FAST currently contains a button component and menu component.  One common use case is a button that opens an associated menu, say, for a toolbar.  To avoid repeating code, it would be helpful to have a single component that manages the menu opened state, and handles the keyboard navigation and a11y concerns involved in this type of menu.
+
+The menu-button represents a logical connection between a button and an openable menu.  This allows for stronger ARIA semantics than using a normal button to open a menu.
 
 ### Use Cases
-- Creating an optional or hidden menu for application interaction
+- Creating an optional or hidden menu for application interaction which is activated by a button
 
 ### Non-goals
 - Creating a static menu
@@ -18,7 +20,7 @@ The menu-button represents a logical connection between a button and an openable
 
 ### Risks and Challenges
 
-Some of these features may be more appropriately implemented in other places.
+Some of these features might be more appropriately implemented in other places.
 
 For example, one major driver for requesting this component is the dismiss behavior, closing a menu when the user clicks elsewhere in the page.  This could potentially be in its own component, i.e. [MUI ClickAwayListener](https://mui.com/api/click-away-listener/).  It could also reasonably be included in the menu component itself.
 
@@ -48,7 +50,7 @@ Potential ideas:
 <menu id="id">…</menu>
 ```
 
-This option would essentially just introduce a new attribute on a button to associate it with a menu.
+This option would essentially just introduce a new attribute on a button to associate it with a menu.s
  
 ```
 <menu-button>
@@ -78,3 +80,11 @@ This option would simply create a container that would group the button and menu
 
 The menu-button should align to the interaction model provided by the [W3C](https://w3c.github.io/aria-practices/#menubutton)
 
+<!--- Title: feat: add menu-button component to FAST 
+ Comment: 
+
+FAST currently contains a button component and menu component.  One common use case is a button that opens an associated menu, say, for a toolbar.  To avoid repeating code, it would be helpful to have a single component that manages the menu opened state, and handles the keyboard navigation and a11y concerns involved in this type of menu.
+
+I've put together a sort of prospective and bare-bones spec for this component below.  Is something to fill this niche planned for FAST in the future?
+
+--->
