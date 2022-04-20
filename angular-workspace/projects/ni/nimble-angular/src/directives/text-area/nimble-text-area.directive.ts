@@ -31,7 +31,7 @@ export class NimbleTextAreaDirective {
         this.renderer.setProperty(this.elementRef.nativeElement, 'readOnly', toBooleanProperty(value));
     }
 
-    public get resize(): TextAreaResize {
+    public get resize(): TextAreaResize | TextAreaResizeAttribute {
         return this.elementRef.nativeElement.resize;
     }
 

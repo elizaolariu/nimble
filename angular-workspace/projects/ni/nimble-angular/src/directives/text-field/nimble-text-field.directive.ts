@@ -33,7 +33,7 @@ export class NimbleTextFieldDirective {
         this.renderer.setProperty(this.elementRef.nativeElement, 'readOnly', toBooleanProperty(value));
     }
 
-    public get type(): TextFieldType {
+    public get type(): TextFieldType | TextFieldTypeAttribute {
         return this.elementRef.nativeElement.type;
     }
 
