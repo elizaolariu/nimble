@@ -38,6 +38,7 @@
     "angular-workspace/projects/ni/nimble-angular",
     "packages/nimble-blazor",
     "packages/nimble-react",
+    "examples/example-react-app",
     "packages/site"
   ],
   "devDependencies": {

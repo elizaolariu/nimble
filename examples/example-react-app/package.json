@@ -1,0 +1,23 @@
+{
+    "name": "example-react-app",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "parcel src/index.html",
+        "build": "parcel build --public-url ./ src/index.html",
+        "lint": "eslint .",
+        "pack": "npm pack"
+    },
+    "dependencies": {
+        "@ni/eslint-config-typescript": "^3.0.5",
+        "@ni/nimble-react": "*",
+        "@parcel/transformer-sass": "^2.3.1",
+        "parcel": "^2.3.1",
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.0.5",
+        "@types/react-dom": "^18.0.1"
+    }
+}
