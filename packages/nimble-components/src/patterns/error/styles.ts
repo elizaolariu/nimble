@@ -33,7 +33,7 @@ export const styles = css`
     :host([disabled]) .error-content path {
         fill: ${bodyDisabledFontColor};
     }
-    
+
     .error-text {
         display: none;
     }

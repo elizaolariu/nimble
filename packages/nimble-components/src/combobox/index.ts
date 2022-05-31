@@ -143,11 +143,7 @@ const nimbleCombobox = Combobox.compose<ComboboxOptions>({
                 />
             </nimble-toggle-button>
         </div>
-        <div
-            class="error-text"
-            title="${x => x.errorText}"
-            aria-live="polite"
-        >
+        <div class="error-text" title="${x => x.errorText}" aria-live="polite">
             ${x => x.errorText}
         </div>
     `
