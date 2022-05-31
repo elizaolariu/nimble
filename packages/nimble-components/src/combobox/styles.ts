@@ -1,25 +1,19 @@
-import { css, ElementStyles } from '@microsoft/fast-element';
-import {
-    ComboboxOptions,
-    disabledCursor,
-    FoundationElementTemplate
-} from '@microsoft/fast-foundation';
+import { css } from '@microsoft/fast-element';
 import {
     controlHeight,
-    iconSize,
     failColor,
     bodyDisabledFontColor,
-    errorTextFont,
-    borderWidth,
     borderRgbPartialColor,
     smallPadding
 } from '../theme-provider/design-tokens';
 
-import { styles as selectStyles } from '../select/styles';
+import { styles as dropdownStyles } from '../patterns/dropdown/styles';
+import { styles as errorStyles } from '../patterns/error/styles';
 import { focusVisible } from '../utilities/style/focus';
 
-export const styles: FoundationElementTemplate<ElementStyles, ComboboxOptions> = (_context, _definition) => css`
-        ${selectStyles(_context, _definition)}
+export const styles = css`
+        ${dropdownStyles}
+        ${errorStyles}
 
         :host {
             --ni-private-hover-bottom-border-width: 2px;
@@ -75,27 +69,6 @@ export const styles: FoundationElementTemplate<ElementStyles, ComboboxOptions> =
             align-items: baseline;
         }
 
-        .error-content {
-            width: ${iconSize};
-            display: none;
-        }
-
-        :host(.invalid) .error-content {
-            display: contents;
-        }
-
-        :host(.invalid) .error-content svg {
-            height: ${iconSize};
-            width: ${iconSize};
-            padding-right: ${smallPadding};
-            flex: none;
-        }
-
-        :host(.invalid) .error-content path {
-            fill: ${failColor};
-        }
-
-        :host([disabled]) .error-content path,
         :host([disabled]) .dropdown-icon {
             fill: ${bodyDisabledFontColor};
         }
@@ -111,35 +84,6 @@ export const styles: FoundationElementTemplate<ElementStyles, ComboboxOptions> =
         .dropdown-button {
             --ni-nimble-control-height: 24px;
             margin-left: ${smallPadding};
-        }
-
-        .errortext {
-            display: none;
-        }
-
-        :host(.invalid) .errortext {
-            display: block;
-            font: ${errorTextFont};
-            color: ${failColor};
-            width: 100%;
-            position: absolute;
-            top: ${controlHeight};
-            left: 0px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        :host(.invalid[readonly]:not([disabled])) .errortext {
-            top: calc(${controlHeight} - ${borderWidth});
-        }
-
-        :host(.invalid) .error-text:empty {
-            display: none;
-        }
-
-        :host([disabled]) .errortext {
-            color: ${bodyDisabledFontColor};
         }
 
         :host(:empty) .listbox {
