@@ -33,7 +33,6 @@ public partial class NimbleCombobox : NimbleInputBase<string?>
     [Parameter]
     public AutoComplete? AutoComplete { get; set; }
 
-
     /// <summary>
     /// Gets or sets the child content to be rendered inside the combobox
     /// </summary>
