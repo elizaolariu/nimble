@@ -165,7 +165,7 @@ describe('Combobox', () => {
         await disconnect();
     });
 
-    it('input element gets aria-label from combobox', async () => {
+    xit('input element gets aria-label from combobox', async () => {
         const { element, connect, disconnect } = await setup();
         await connect();
 
