@@ -93,10 +93,10 @@
             </div>
             <div class="sub-container">
                 <div class="container-label">Tabs</div>
-                <nimble-tabs>
-                    <nimble-tab>Tab 1</nimble-tab>
-                    <nimble-tab>Tab 2</nimble-tab>
-                    <nimble-tab disabled>Tab 3 (Disabled)</nimble-tab>
+                <nimble-tabs (activeidChange)="idChange($event)">
+                    <nimble-tab id="1">Tab 1</nimble-tab>
+                    <nimble-tab id="2">Tab 2</nimble-tab>
+                    <nimble-tab disabled id=""3>Tab 3 (Disabled)</nimble-tab>
                     <nimble-tabs-toolbar>
                         <nimble-button (click)="navDrawer.open()">Open Drawer</nimble-button>
                     </nimble-tabs-toolbar>
