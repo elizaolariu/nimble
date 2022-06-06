@@ -17,16 +17,12 @@ export class CustomAppComponent {
         alert(`${menuItemText} selected`);
     }
 
-    public idChange(id: string): void {
-        console.log(id);
-    }
-
     /**
      * Set the currently active tab index
      */
-    // @Input() public set activeTabIndex(value: number) {
-    //     console.log(`${value}`);
-    //     // this.activeIndex = value;
-    //     this.changeDetectorRef.detectChanges();
-    // }
+    @Input() public set activeTabIndex(value: string) {
+        console.log(`${value}`);
+        // this.activeIndex = value;
+        // this.changeDetectorRef.detectChanges();
+    }
 }
