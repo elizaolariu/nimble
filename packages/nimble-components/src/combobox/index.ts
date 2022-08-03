@@ -109,6 +109,16 @@ export class Combobox extends FoundationCombobox implements IHasErrorText {
         super.filterOptions();
         const enabledOptions = this.filteredOptions.filter(o => !o.disabled);
         this.filteredOptions = enabledOptions;
+        if (this.filteredOptions.length === 0 && this.open) {
+            this.open = false;
+        }
+    }
+
+    public override inputHandler(e: InputEvent): void {
+        super.inputHandler(e);
+        if (this.filteredOptions.length === 0) {
+            this.open = false;
+        }
     }
 
     protected override openChanged(): void {

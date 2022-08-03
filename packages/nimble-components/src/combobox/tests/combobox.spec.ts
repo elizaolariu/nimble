@@ -166,6 +166,34 @@ describe('Combobox', () => {
         await disconnect();
     });
 
+    const listAutocompleteTestData: ComboboxAutocomplete[] = [
+        ComboboxAutocomplete.list,
+        ComboboxAutocomplete.both
+    ];
+    listAutocompleteTestData.forEach(testData => {
+        it(`when filtered options for mode ${testData} result in no matches, dropdown is hidden`, async () => {
+            const { element, connect, disconnect } = await setup(undefined);
+            await connect();
+
+            element.autocomplete = testData;
+            element.control.value = 'Q';
+            let inputEvent = new InputEvent('Q'); // fake user typing 'Q' to match nothing
+            element.inputHandler(inputEvent);
+            await DOM.nextUpdate();
+
+            expect(element.listbox.hidden).toBeTrue();
+
+            element.control.value = 'T';
+            inputEvent = new InputEvent('T'); // fake user typing 'T' to match existing options
+            element.inputHandler(inputEvent);
+            await DOM.nextUpdate();
+
+            expect(element.listbox.hidden).toBeFalse();
+
+            await disconnect();
+        });
+    });
+
     it('input element gets aria-label from combobox', async () => {
         const { element, connect, disconnect } = await setup();
         await connect();
@@ -197,16 +225,16 @@ describe('Combobox', () => {
         await disconnect();
     });
 
-    const filterOptionTestData: { autocomplete: ComboboxAutocomplete }[] = [
-        { autocomplete: ComboboxAutocomplete.inline },
-        { autocomplete: ComboboxAutocomplete.both }
+    const inlineAutocompleteTestData: ComboboxAutocomplete[] = [
+        ComboboxAutocomplete.inline,
+        ComboboxAutocomplete.both
     ];
-    filterOptionTestData.forEach(testData => {
-        it('disabled options will not be selected by keyboard input', async () => {
+    inlineAutocompleteTestData.forEach(testData => {
+        it(`disabled options will not be selected by keyboard input for autocomplete mode ${testData}`, async () => {
             const { element, connect, disconnect } = await setup();
             await connect();
 
-            element.autocomplete = testData.autocomplete;
+            element.autocomplete = testData;
             element.control.value = 'F';
             const inputEvent = new InputEvent('F'); // fake user typing 'F' to match 'Four'
             element.inputHandler(inputEvent);
