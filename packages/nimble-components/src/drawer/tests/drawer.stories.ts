@@ -14,14 +14,15 @@ import {
     drawerWidth,
     standardPadding
 } from '../../theme-provider/design-tokens';
-import { DrawerLocation } from '../types';
+import { DrawerDismissBehavior, DrawerLocation } from '../types';
 import type { Drawer } from '..';
 import '../../all-components';
 
 interface DrawerArgs {
     location: DrawerLocation;
     modal: boolean;
-    preventDismiss: boolean;
+    keyboardDismiss: DrawerDismissBehavior;
+    clickDismiss: DrawerDismissBehavior;
     content: ExampleContentType;
     width: DrawerWidthOptions;
     drawerRef: Drawer;
@@ -113,7 +114,8 @@ const metadata: Meta<DrawerArgs> = {
         <nimble-drawer
             ${ref('drawerRef')}
             ?modal="${x => x.modal}"
-            ?prevent-dismiss="${x => x.preventDismiss}"
+            keyboard-dismiss="${x => x.keyboardDismiss}"
+            click-dismiss="${x => x.clickDismiss}"
             location="${x => x.location}"
             style="${x => `${drawerWidth.cssCustomProperty}:${widths[x.width]};`}"
         >
@@ -146,6 +148,14 @@ const metadata: Meta<DrawerArgs> = {
                         'Header/Content/Footer Example'
                 }
             }
+        },
+        keyboardDismiss: {
+            options: Object.values(DrawerDismissBehavior),
+            control: { type: 'select' }
+        },
+        clickDismiss: {
+            options: Object.values(DrawerDismissBehavior),
+            control: { type: 'select' }
         },
         width: {
             description: widthDescription,
@@ -181,7 +191,8 @@ const metadata: Meta<DrawerArgs> = {
     args: {
         location: DrawerLocation.left,
         modal: true,
-        preventDismiss: false,
+        keyboardDismiss: DrawerDismissBehavior.default,
+        clickDismiss: DrawerDismissBehavior.default,
         content: ExampleContentType.simpleTextContent,
         width: DrawerWidthOptions.default,
         drawerRef: undefined,

@@ -3,7 +3,6 @@ import type { Drawer } from '.';
 
 // mkreis TODO: ariaLabel
 
-
 // prettier-ignore
 export const template = html<Drawer>`
     <dialog
@@ -11,6 +10,7 @@ export const template = html<Drawer>`
         aria-describedby="${x => x.ariaDescribedby}"
         aria-labelledby="${x => x.ariaLabelledby}"
         ${ref('dialog')}
+        @close="${(x, c) => x.closeHandler(c.event)}"
     >
         <slot></slot>
     </dialog>

@@ -3,9 +3,10 @@ import {
     DesignSystem,
     FoundationElement
 } from '@microsoft/fast-foundation';
+import { eventKeyDown, eventMouseDown, keyEscape } from '@microsoft/fast-web-utilities';
 import { styles } from './styles';
 import { template } from './template';
-import { DrawerLocation } from './types';
+import { DrawerDismissBehavior, DrawerLocation } from './types';
 
 declare global {
     interface HTMLElementTagNameMap {
@@ -22,9 +23,6 @@ export class Drawer extends FoundationElement {
     @attr
     public location: DrawerLocation = DrawerLocation.left;
 
-    // @attr
-    // public state: DrawerState = DrawerState.closed;
-
     @attr({ mode: 'boolean' })
     public open = false;
 
@@ -35,12 +33,20 @@ export class Drawer extends FoundationElement {
     public modal = false;
 
     /**
-     * Specifies whether or not the drawer can be closed using ESC or clicking off. If set to 'true', the drawer can
-     * only be close programmatically.
-     * HTML Attribute: prevent-dismiss
+     * Specifies whether or not the drawer can be closed with the keyboard, such as ESC.
+     * If the value is set to 'default', modal dialogs allow dismissal with the keyboard and non-modal
+     * dialogs do not allow dismissal with the keyboard.
      */
-    @attr({ attribute: 'prevent-dismiss', mode: 'boolean' })
-    public preventDismiss = false;
+    @attr({ attribute: 'keyboard-dismiss' })
+    public keyboardDismiss = DrawerDismissBehavior.default;
+
+    /**
+     * Specifies whether or not the drawer can be closed by clicking off of the drawer.
+     * If the value is set to 'default', modal dialogs do not allow dismissal with the keyboard and non-modal
+     * dialogs do allow dismissal with the keyboard.
+     */
+    @attr({ attribute: 'click-dismiss' })
+    public clickDismiss = DrawerDismissBehavior.default;
 
     /**
      * The id of the element describing the dialog.
@@ -62,64 +68,84 @@ export class Drawer extends FoundationElement {
 
     public dialog!: HTMLDialogElement;
 
+    public override connectedCallback(): void {
+        super.connectedCallback();
+        if (this.open) {
+            this.openDialog();
+        }
+    }
+
+    public override disconnectedCallback(): void {
+        this.closeDialog();
+    }
+
     public openChanged(_prev: boolean | undefined, _next: boolean | undefined): void {
         if (!this.$fastController.isConnected) {
-            // Don't call setPositioning() until we're connected,
-            // since this.forcedPosition isn't initialized yet.
             return;
         }
 
-        if (!this.open) {
-            this.dialog.close();
-            return;
-        }
 
+        if (this.open) {
+            this.openDialog();
+        } else {
+            this.closeDialog();
+        }
+    }
+
+    /**
+     * Handler for dialog closing.
+     * @internal
+     */
+    public closeHandler(_event: Event): void {
+        this.open = false;
+    }
+
+    private readonly documentKeyDownHandlerFunction = (event: Event): void => this.documentKeyDownHandler(event as KeyboardEvent);
+    private readonly documentClickHandlerFunction = (event: Event): void => this.documentClickHandler(event);
+
+    private openDialog(): void {
         if (this.modal) {
             this.dialog.showModal();
         } else {
             this.dialog.show();
         }
+        document.addEventListener(eventKeyDown, this.documentKeyDownHandlerFunction);
+        document.addEventListener(eventMouseDown, this.documentClickHandlerFunction);
     }
 
-    /**
-     * Handler for overlay clicks (user-initiated dismiss requests) only.
-     * @internal
-     */
-    // public dismiss(): void {
-    //     // Note: intentionally not calling super() in this function in order to implement custom preventDismiss behavior
-    //     const shouldDismiss = this.$emit(
-    //         'cancel',
-    //         {},
-    //         // Aligned with the configuration of HTMLDialogElement cancel event:
-    //         // https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/cancel_event
-    //         { bubbles: false, cancelable: true, composed: false }
-    //     );
-    //     if (shouldDismiss && !this.preventDismiss) {
-    //         this.$emit('dismiss');
-    //         this.hide();
-    //     }
-    // }
+    private closeDialog(): void {
+        this.dialog.close();
+        document.removeEventListener(eventKeyDown, this.documentKeyDownHandlerFunction);
+        document.removeEventListener(eventMouseDown, this.documentClickHandlerFunction);
+    }
 
-    // private onPropertyChange(propertyName: string): void {
-    //     switch (propertyName) {
-    //         case 'hidden':
-    //             this.onHiddenChanged();
-    //             break;
-    //         case 'location':
-    //             this.onLocationChanged();
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // }
+    private canDismissWithKeyboard(): boolean {
+        return this.keyboardDismiss === DrawerDismissBehavior.allow
+            || (this.keyboardDismiss === DrawerDismissBehavior.default && this.modal);
+    }
 
-    // private onHiddenChanged(): void {
-    //     if (this.hidden && this.state !== DrawerState.closed) {
-    //         this.state = DrawerState.closed;
-    //     } else if (!this.hidden && this.state === DrawerState.closed) {
-    //         this.state = DrawerState.opened;
-    //     }
-    // }
+    private canDismissWithClick(): boolean {
+        return this.clickDismiss === DrawerDismissBehavior.allow
+            || (this.clickDismiss === DrawerDismissBehavior.default && !this.modal);
+    }
+
+    private readonly documentKeyDownHandler = (event: KeyboardEvent): void => {
+        if (event.key === keyEscape) {
+            const shouldDismiss = this.canDismissWithKeyboard();
+            if (this.modal && !shouldDismiss) {
+                event.preventDefault();
+            } else if (!this.modal && shouldDismiss) {
+                this.open = false;
+            }
+        }
+    };
+
+    private readonly documentClickHandler = (event: Event): void => {
+        const clickTarget = event.target as HTMLElement;
+        if (!this.dialog.contains(clickTarget) && this.canDismissWithClick()) {
+            this.open = false;
+        }
+    };
 }
 
 const nimbleDrawer = Drawer.compose({

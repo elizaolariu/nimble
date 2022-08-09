@@ -16,7 +16,7 @@ export const styles = css`
     ${display('block')}
 
     :host {
-        position: relative;
+        position: absolute;
         top: 0;
         bottom: 0;
         width: fit-content;
@@ -24,10 +24,6 @@ export const styles = css`
         outline: none;
         font: ${bodyFont};
         color: ${bodyFontColor};
-    }
-
-    :host([modal]) {
-        position: absolute;
     }
 
     :host([location='left']) {
@@ -38,32 +34,12 @@ export const styles = css`
         right: 0px;
     }
 
-    .positioning-region {
-        display: block;
-        position: relative;
-        justify-content: center;
-        width: fit-content;
-        height: 100%;
-        inset: 0px;
-        overflow: hidden;
-        z-index: 999;
-    }
-
-    :host([modal]) .positioning-region {
-        width: 100%;
-        position: fixed;
-        display: flex;
-    }
-
     ${/* Note: overlay is only present in the DOM when modal=true */ ''}
-    .overlay {
-        position: fixed;
-        inset: 0px;
+    dialog::backdrop {
         background: ${popupBorderColor};
-        touch-action: none;
     }
 
-    .control {
+    dialog {
         position: relative;
         top: 0px;
         bottom: 0px;
@@ -77,21 +53,20 @@ export const styles = css`
         background-color: ${applicationBackgroundColor};
     }
 
-    :host([modal]) .control {
-        position: absolute;
-        height: 100%;
+    dialog:not([open]) {
+        display: none;
     }
 
-    :host(.hidden) .control {
+    :host(.hidden) dialog {
         visibility: hidden;
     }
 
-    :host([location='left']) .control {
+    :host([location='left']) dialog {
         left: 0px;
         border-right: ${borderWidth} solid ${popupBoxShadowColor};
     }
 
-    :host([location='right']) .control {
+    :host([location='right']) dialog {
         right: 0px;
         border-left: ${borderWidth} solid ${popupBoxShadowColor};
     }
