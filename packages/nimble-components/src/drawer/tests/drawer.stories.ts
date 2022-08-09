@@ -14,14 +14,13 @@ import {
     drawerWidth,
     standardPadding
 } from '../../theme-provider/design-tokens';
-import { DrawerLocation, DrawerState } from '../types';
+import { DrawerLocation } from '../types';
 import type { Drawer } from '..';
 import '../../all-components';
 
 interface DrawerArgs {
     location: DrawerLocation;
-    state: DrawerState;
-    modal: string;
+    modal: boolean;
     preventDismiss: boolean;
     content: ExampleContentType;
     width: DrawerWidthOptions;
@@ -35,7 +34,7 @@ const simpleContent = html<DrawerArgs>`
             This is a drawer which can slide in from either side of the screen
             and display custom content.
         </p>
-        <nimble-button @click="${x => x.drawerRef.hide()}">Close</nimble-button>
+        <nimble-button @click="${x => { x.drawerRef.open = false; }}">Close</nimble-button>
     </section>
 `;
 
@@ -59,8 +58,8 @@ const headerFooterContent = html<DrawerArgs>`
         </p>
     </section>
     <footer>
-        <nimble-button @click="${x => x.drawerRef.hide()}" appearance="ghost" class="cancel-button">Cancel</nimble-button>
-        <nimble-button @click="${x => x.drawerRef.hide()}" appearance="outline">OK</nimble-button>
+        <nimble-button @click="${x => { x.drawerRef.open = false; }}" appearance="ghost" class="cancel-button">Cancel</nimble-button>
+        <nimble-button @click="${x => { x.drawerRef.open = false; }}" appearance="outline">OK</nimble-button>
     </footer>`;
 
 const content = {
@@ -113,10 +112,9 @@ const metadata: Meta<DrawerArgs> = {
     render: createUserSelectedThemeStory(html`
         <nimble-drawer
             ${ref('drawerRef')}
-            modal="${x => x.modal}"
+            ?modal="${x => x.modal}"
             ?prevent-dismiss="${x => x.preventDismiss}"
             location="${x => x.location}"
-            state="${x => x.state}" 
             style="${x => `${drawerWidth.cssCustomProperty}:${widths[x.width]};`}"
         >
             ${x => content[x.content]}
@@ -133,21 +131,6 @@ const metadata: Meta<DrawerArgs> = {
         location: {
             options: [DrawerLocation.left, DrawerLocation.right],
             control: { type: 'radio' }
-        },
-        state: {
-            options: [
-                DrawerState.opening,
-                DrawerState.opened,
-                DrawerState.closing,
-                DrawerState.closed
-            ],
-            control: { type: 'select' }
-        },
-        modal: {
-            options: ['true', 'false'],
-            control: { type: 'select' },
-            description:
-                'Note: The value is the string "true" or "false" unlike normal boolean attributes.'
         },
         content: {
             options: [
@@ -197,14 +180,13 @@ const metadata: Meta<DrawerArgs> = {
     },
     args: {
         location: DrawerLocation.left,
-        state: DrawerState.opened,
-        modal: 'true',
+        modal: true,
         preventDismiss: false,
         content: ExampleContentType.simpleTextContent,
         width: DrawerWidthOptions.default,
         drawerRef: undefined,
         toggleDrawer: (x: Drawer): void => {
-            x.state = x.hidden ? DrawerState.opening : DrawerState.closing;
+            x.open = !x.open;
         }
     }
 };

@@ -4,10 +4,9 @@ export const DrawerLocation = {
 } as const;
 export type DrawerLocation = typeof DrawerLocation[keyof typeof DrawerLocation];
 
-export const DrawerState = {
-    opening: 'opening',
-    opened: 'opened',
-    closing: 'closing',
-    closed: 'closed'
+export const DrawerDismissBehavior = {
+    default: 'default',
+    prevent: 'prevent',
+    allow: 'allow'
 } as const;
-export type DrawerState = typeof DrawerState[keyof typeof DrawerState];
+export type DrawerDismissBehavior = typeof DrawerDismissBehavior[keyof typeof DrawerDismissBehavior];
