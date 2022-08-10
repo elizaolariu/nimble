@@ -1,5 +1,6 @@
 import { css } from '@microsoft/fast-element';
 import { display } from '@microsoft/fast-foundation';
+import { Black15, Black91, SmallDelay, White } from '@ni/nimble-tokens/dist/styledictionary/js/tokens';
 import {
     applicationBackgroundColor,
     bodyFont,
@@ -9,8 +10,11 @@ import {
     popupBoxShadowColor,
     standardPadding,
     titlePlus1Font,
-    drawerWidth
+    drawerWidth,
+    smallDelay
 } from '../theme-provider/design-tokens';
+import { hexToRgbaCssColor } from '../utilities/style/colors';
+import { themeBehavior } from '../utilities/style/theme';
 
 export const styles = css`
     ${display('block')}
@@ -19,7 +23,7 @@ export const styles = css`
         position: absolute;
         top: 0;
         bottom: 0;
-        width: fit-content;
+        width: ${drawerWidth};
         height: 100%;
         outline: none;
         font: ${bodyFont};
@@ -35,11 +39,16 @@ export const styles = css`
     }
 
     ${/* Note: overlay is only present in the DOM when modal=true */ ''}
-    dialog::backdrop {
+    ::backdrop {
         background: ${popupBorderColor};
     }
 
     dialog {
+        visibility: hidden;
+    }
+
+    dialog[open] {
+        visibility: visible;
         position: relative;
         top: 0px;
         bottom: 0px;
@@ -48,13 +57,12 @@ export const styles = css`
         box-sizing: border-box;
         border-radius: 0px;
         border-width: 0px;
-        width: ${drawerWidth};
         height: 100%;
         background-color: ${applicationBackgroundColor};
-    }
-
-    dialog:not([open]) {
-        display: none;
+        margin: 0px;
+        padding: 0px;
+        max-width: none;
+        max-height: none;
     }
 
     :host(.hidden) dialog {
@@ -97,4 +105,27 @@ export const styles = css`
         justify-content: flex-end;
         border-top: ${borderWidth} solid ${popupBorderColor};
     }
-`;
+`.withBehaviors(
+    /* Local Theme Behaviors to style the backdrop because it is not a decendent of the theme provider */
+        themeBehavior(
+        // Light Theme
+            css`
+            dialog::backdrop {
+                background: ${hexToRgbaCssColor(Black91, 0.3)};
+            }
+        `,
+            // Dark Theme
+            css`
+            dialog::backdrop {
+                background: ${hexToRgbaCssColor(Black15, 0.3)};
+            }
+        `,
+            // Color Theme
+            css`
+            dialog::backdrop {
+                background: ${hexToRgbaCssColor(White, 0.3)};
+            }
+        `
+        )
+    );
+

@@ -51,6 +51,11 @@ const headerFooterContent = html<DrawerArgs>`
         <p>This is a drawer with <code>header</code>, <code>section</code>, and <code>footer</code> elements.</p>
         <p>When placed in a <code>nimble-drawer</code> they will be automatically styled for you!</p>
 
+        <div>
+            <nimble-number-field>I am not auto focused</nimble-number-field>
+            <nimble-number-field autofocus>I am auto focused</nimble-number-field>
+        </div>
+
         <p style="height: 1000px;">
             This is a tall piece of content so you can see how scrolling behaves. Scroll down to see more 👇.
         </p>
@@ -121,13 +126,20 @@ const metadata: Meta<DrawerArgs> = {
         >
             ${x => content[x.content]}
         </nimble-drawer>
+        <div
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 16px;"
+        >
         <nimble-button
-            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"
             @click="${x => x.toggleDrawer(x.drawerRef)}"
             class="code-hide"
         >
-            Show/Hide Drawer (animated)
+            Show/Hide Drawer
         </nimble-button>
+        <nimble-text-field
+            class="code-hide"
+        >
+            Example application content
+        </nimble-text-field>
     `),
     argTypes: {
         location: {

@@ -38,7 +38,7 @@ export class Drawer extends FoundationElement {
      * dialogs do not allow dismissal with the keyboard.
      */
     @attr({ attribute: 'keyboard-dismiss' })
-    public keyboardDismiss = DrawerDismissBehavior.default;
+    public keyboardDismiss: DrawerDismissBehavior = DrawerDismissBehavior.default;
 
     /**
      * Specifies whether or not the drawer can be closed by clicking off of the drawer.
@@ -46,7 +46,7 @@ export class Drawer extends FoundationElement {
      * dialogs do allow dismissal with the keyboard.
      */
     @attr({ attribute: 'click-dismiss' })
-    public clickDismiss = DrawerDismissBehavior.default;
+    public clickDismiss: DrawerDismissBehavior = DrawerDismissBehavior.default;
 
     /**
      * The id of the element describing the dialog.
@@ -83,7 +83,6 @@ export class Drawer extends FoundationElement {
         if (!this.$fastController.isConnected) {
             return;
         }
-
 
         if (this.open) {
             this.openDialog();
@@ -142,7 +141,7 @@ export class Drawer extends FoundationElement {
 
     private readonly documentClickHandler = (event: Event): void => {
         const clickTarget = event.target as HTMLElement;
-        if (!this.dialog.contains(clickTarget) && this.canDismissWithClick()) {
+        if (!this.contains(clickTarget) && this.canDismissWithClick()) {
             this.open = false;
         }
     };
