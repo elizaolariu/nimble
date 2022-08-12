@@ -130,11 +130,12 @@ export class Drawer extends FoundationElement {
     }
 
     private triggerAnimation(opening: boolean): void {
+        // TODO: close animation doesn't work with pressing escape with modal = true
         this.dialog.classList.remove('animation-complete');
         if (opening) {
-            this.dialog.classList.add('animate-in');
+            this.dialog.classList.add('open');
         } else {
-            this.dialog.classList.remove('animate-in');
+            this.dialog.classList.remove('open');
         }
 
         this.dialog.addEventListener(eventTransitionEnd, this.transitionEndHandlerFunction);

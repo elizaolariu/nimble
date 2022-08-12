@@ -39,7 +39,7 @@ export const styles = css`
         transition: transform ${largeDelay} ease-in;
     }
 
-    :host([location='left']) dialog[open].animate-in {
+    :host([location='left']) dialog[open].open {
         transform: translate(0%);
     }
 
@@ -52,7 +52,7 @@ export const styles = css`
         transition: width ${largeDelay} ease-in;
     }
 
-    :host([location='right']) dialog[open].animate-in {
+    :host([location='right']) dialog[open].open {
         width: ${drawerWidth};
     }
 
@@ -92,7 +92,7 @@ export const styles = css`
         transition: opacity 0.25s ease-in;
     }
 
-    dialog[open].animate-in::backdrop {
+    dialog[open].open::backdrop {
         opacity: 1;
     }
 
