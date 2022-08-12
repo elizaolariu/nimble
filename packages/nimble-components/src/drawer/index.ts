@@ -15,6 +15,12 @@ declare global {
 }
 
 /**
+ * TODOs:
+ * - close animation doesn't work with escape when modal = true
+ * - turn off animations when disableAnimations = true or prefers reduced motion is set
+ */
+
+/**
  * Drawer/Sidenav control. Shows content in a panel on the left / right side of the screen,
  * which animates to be visible with a slide-in / slide-out animation.
  * Configured via 'location', 'state', 'modal', 'preventDismiss' properties.
