@@ -12,6 +12,8 @@ export const template = html<Drawer>`
         ${ref('dialog')}
         @close="${(x, c) => x.closeHandler(c.event)}"
     >
-        <slot></slot>
+        <div class="dialog-contents">
+            <slot></slot>
+        </div>
     </dialog>
 `;

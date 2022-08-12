@@ -30,7 +30,7 @@ interface DrawerArgs {
 }
 
 const simpleContent = html<DrawerArgs>`
-    <section>
+    <section style="width: 1000px">
         <p>
             This is a drawer which can slide in from either side of the screen
             and display custom content.

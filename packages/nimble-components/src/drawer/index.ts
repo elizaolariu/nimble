@@ -3,7 +3,7 @@ import {
     DesignSystem,
     FoundationElement
 } from '@microsoft/fast-foundation';
-import { eventKeyDown, eventMouseDown, keyEscape } from '@microsoft/fast-web-utilities';
+import { eventKeyDown, eventMouseDown, eventTransitionEnd, keyEscape } from '@microsoft/fast-web-utilities';
 import { styles } from './styles';
 import { template } from './template';
 import { DrawerDismissBehavior, DrawerLocation } from './types';
@@ -110,6 +110,7 @@ export class Drawer extends FoundationElement {
 
     private readonly documentKeyDownHandlerFunction = (event: Event): void => this.documentKeyDownHandler(event as KeyboardEvent);
     private readonly documentClickHandlerFunction = (event: Event): void => this.documentClickHandler(event as MouseEvent);
+    private readonly transitionEndHandlerFunction = (): void => this.transitionEndHandler();
 
     private openDialog(): void {
         if (this.modal) {
@@ -117,14 +118,26 @@ export class Drawer extends FoundationElement {
         } else {
             this.dialog.show();
         }
+        this.triggerAnimation(true);
         document.addEventListener(eventKeyDown, this.documentKeyDownHandlerFunction);
         document.addEventListener(eventMouseDown, this.documentClickHandlerFunction);
     }
 
     private closeDialog(): void {
-        this.dialog.close();
+        this.triggerAnimation(false);
         document.removeEventListener(eventKeyDown, this.documentKeyDownHandlerFunction);
         document.removeEventListener(eventMouseDown, this.documentClickHandlerFunction);
+    }
+
+    private triggerAnimation(opening: boolean): void {
+        this.dialog.classList.remove('animation-complete');
+        if (opening) {
+            this.dialog.classList.add('animate-in');
+        } else {
+            this.dialog.classList.remove('animate-in');
+        }
+
+        this.dialog.addEventListener(eventTransitionEnd, this.transitionEndHandlerFunction);
     }
 
     private canDismissWithKeyboard(): boolean {
@@ -135,6 +148,14 @@ export class Drawer extends FoundationElement {
     private canDismissWithClick(): boolean {
         return this.clickDismiss === DrawerDismissBehavior.allow
             || (this.clickDismiss === DrawerDismissBehavior.default && !this.modal);
+    }
+
+    private transitionEndHandler(): void {
+        this.dialog.classList.add('animation-complete');
+        this.dialog.removeEventListener(eventTransitionEnd, this.transitionEndHandlerFunction);
+        if (!this.open) {
+            this.dialog.close();
+        }
     }
 
     private readonly documentKeyDownHandler = (event: KeyboardEvent): void => {

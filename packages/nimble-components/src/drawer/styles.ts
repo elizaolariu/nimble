@@ -33,40 +33,37 @@ export const styles = css`
     :host([location='left']) {
         left: 0px;
     }
-    
-    :host([location='left']) dialog:not([open]) {
+
+    :host([location='left']) dialog[open] {
         transform: translate(-100%);
+        transition: transform ${largeDelay} ease-in;
+    }
+
+    :host([location='left']) dialog[open].animate-in {
+        transform: translate(0%);
     }
 
     :host([location='right']) {
         right: 0px;
     }
-    
-    :host([location='right']) dialog:not([open]) {
-        transform: translate(100%);
+
+    :host([location='right']) dialog[open] {
+        width: 0px;
+        transition: width ${largeDelay} ease-in;
     }
 
-    ${/* Note: overlay is only present in the DOM when modal=true */ ''}
-    ::backdrop {
-        background: ${popupBorderColor};
-    }
-
-    dialog {
-        visibility: hidden;
-        z-index: 9999;
-        animation: transform 5s ease-in;
+    :host([location='right']) dialog[open].animate-in {
+        width: ${drawerWidth};
     }
 
     dialog[open] {
-        visibility: visible;
         width: ${drawerWidth};
-        transform: translate(0%);
+        z-index: 9999;
         position: relative;
         top: 0px;
         bottom: 0px;
         display: flex;
         flex-direction: column;
-        box-sizing: border-box;
         border-radius: 0px;
         border-width: 0px;
         height: 100%;
@@ -75,6 +72,28 @@ export const styles = css`
         padding: 0px;
         max-width: none;
         max-height: none;
+        overflow-x: hidden;
+    }
+
+    dialog[open].animation-complete {
+        overflow-x: auto;
+    }
+
+    .dialog-contents {
+        width: ${drawerWidth};
+    }
+
+    dialog.animation-complete .dialog-contents {
+        width: 100%;
+    }
+
+    dialog[open]::backdrop {
+        opacity:0;
+        transition: opacity 0.25s ease-in;
+    }
+
+    dialog[open].animate-in::backdrop {
+        opacity: 1;
     }
 
     :host(.hidden) dialog {
@@ -120,7 +139,10 @@ export const styles = css`
         border-top: ${borderWidth} solid ${popupBorderColor};
     }
 `.withBehaviors(
-    /* Local Theme Behaviors to style the backdrop because it is not a decendent of the theme provider */
+    /*
+        Local Theme Behaviors to style the backdrop because it is not a decendent of the theme provider. As a result,
+        the backdrop cannot be styled using tokens directly. Note: The backdrop is only visible when modal = true.
+    */
         themeBehavior(
         // Light Theme
             css`
@@ -141,5 +163,4 @@ export const styles = css`
             }
         `
         )
-    );
-
+    );;
