@@ -1,6 +1,6 @@
 import { css } from '@microsoft/fast-element';
 import { display } from '@microsoft/fast-foundation';
-import { Black15, Black91, SmallDelay, White } from '@ni/nimble-tokens/dist/styledictionary/js/tokens';
+import { Black15, Black91, White } from '@ni/nimble-tokens/dist/styledictionary/js/tokens';
 import {
     applicationBackgroundColor,
     bodyFont,
@@ -11,7 +11,7 @@ import {
     standardPadding,
     titlePlus1Font,
     drawerWidth,
-    smallDelay
+    largeDelay
 } from '../theme-provider/design-tokens';
 import { hexToRgbaCssColor } from '../utilities/style/colors';
 import { themeBehavior } from '../utilities/style/theme';
@@ -33,9 +33,17 @@ export const styles = css`
     :host([location='left']) {
         left: 0px;
     }
+    
+    :host([location='left']) dialog:not([open]) {
+        transform: translate(-100%);
+    }
 
     :host([location='right']) {
         right: 0px;
+    }
+    
+    :host([location='right']) dialog:not([open]) {
+        transform: translate(100%);
     }
 
     ${/* Note: overlay is only present in the DOM when modal=true */ ''}
@@ -45,10 +53,14 @@ export const styles = css`
 
     dialog {
         visibility: hidden;
+        z-index: 9999;
+        animation: transform 5s ease-in;
     }
 
     dialog[open] {
         visibility: visible;
+        width: ${drawerWidth};
+        transform: translate(0%);
         position: relative;
         top: 0px;
         bottom: 0px;
@@ -71,10 +83,12 @@ export const styles = css`
 
     :host([location='left']) dialog {
         left: 0px;
+        right: auto;
         border-right: ${borderWidth} solid ${popupBoxShadowColor};
     }
 
     :host([location='right']) dialog {
+        left: auto;
         right: 0px;
         border-left: ${borderWidth} solid ${popupBoxShadowColor};
     }

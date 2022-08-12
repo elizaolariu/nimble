@@ -8,6 +8,7 @@ There are a number of issues that have come up related to the nimble-drawer:
 - [Nimble Drawer should trap focus when opened modal](https://github.com/ni/nimble/issues/186)
 - [Slide-outs have inconsistent dismiss behavior when clicking outside](https://dev.azure.com/ni/DevCentral/_queries/edit/2015838/)
 - [Pressing ESC when two slide-outs are open closes the wrong one](https://dev.azure.com/ni/DevCentral/_queries/edit/2051165/)
+- [sl-slide-out User able to perform background operations when slide-out menu is opened](https://ni.visualstudio.com/DevCentral/_workitems/edit/2104596)
 
 
 Proposed behavior:

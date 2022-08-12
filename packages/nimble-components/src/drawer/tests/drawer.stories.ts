@@ -51,9 +51,14 @@ const headerFooterContent = html<DrawerArgs>`
         <p>This is a drawer with <code>header</code>, <code>section</code>, and <code>footer</code> elements.</p>
         <p>When placed in a <code>nimble-drawer</code> they will be automatically styled for you!</p>
 
-        <div>
+        <div style="display: flex; flex-direction: column; gap: 16px">
             <nimble-number-field>I am not auto focused</nimble-number-field>
             <nimble-number-field autofocus>I am auto focused</nimble-number-field>
+            <nimble-select>
+                <nimble-list-option value="1">option 1</nimble-list-option>
+                <nimble-list-option value="2">option 2</nimble-list-option>
+                <nimble-list-option value="3">option 3</nimble-list-option>
+            </nimble-select>
         </div>
 
         <p style="height: 1000px;">

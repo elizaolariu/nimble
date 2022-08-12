@@ -48,6 +48,9 @@ export class Drawer extends FoundationElement {
     @attr({ attribute: 'click-dismiss' })
     public clickDismiss: DrawerDismissBehavior = DrawerDismissBehavior.default;
 
+    @attr({ attribute: 'disable-animations', mode: 'boolean' })
+    public disableAnimations = false;
+
     /**
      * The id of the element describing the dialog.
      * @public
@@ -79,6 +82,12 @@ export class Drawer extends FoundationElement {
         this.closeDialog();
     }
 
+    public modalChanged(_prev: boolean | undefined, _next: boolean | undefined): void {
+        if (this.open) {
+            throw new Error('The \'modal\' property cannot be changed while the drawer is open.');
+        }
+    }
+
     public openChanged(_prev: boolean | undefined, _next: boolean | undefined): void {
         if (!this.$fastController.isConnected) {
             return;
@@ -100,7 +109,7 @@ export class Drawer extends FoundationElement {
     }
 
     private readonly documentKeyDownHandlerFunction = (event: Event): void => this.documentKeyDownHandler(event as KeyboardEvent);
-    private readonly documentClickHandlerFunction = (event: Event): void => this.documentClickHandler(event);
+    private readonly documentClickHandlerFunction = (event: Event): void => this.documentClickHandler(event as MouseEvent);
 
     private openDialog(): void {
         if (this.modal) {
@@ -139,12 +148,19 @@ export class Drawer extends FoundationElement {
         }
     };
 
-    private readonly documentClickHandler = (event: Event): void => {
-        const clickTarget = event.target as HTMLElement;
-        if (!this.contains(clickTarget) && this.canDismissWithClick()) {
+    private readonly documentClickHandler = (event: MouseEvent): void => {
+        if (this.canDismissWithClick() && !this.isPointWithinDrawer(event.x, event.y)) {
             this.open = false;
         }
     };
+
+    private isPointWithinDrawer(x: number, y: number): boolean {
+        const boundingRectangle = this.getBoundingClientRect();
+        return x >= boundingRectangle.x
+            && x <= boundingRectangle.x + boundingRectangle.width
+            && y >= boundingRectangle.y
+            && y <= boundingRectangle.y + boundingRectangle.height;
+    }
 }
 
 const nimbleDrawer = Drawer.compose({
