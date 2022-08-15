@@ -13,6 +13,7 @@ import {
     drawerWidth,
     largeDelay
 } from '../theme-provider/design-tokens';
+import { Theme } from '../theme-provider/types';
 import { hexToRgbaCssColor } from '../utilities/style/colors';
 import { themeBehavior } from '../utilities/style/theme';
 
@@ -139,28 +140,32 @@ export const styles = css`
         border-top: ${borderWidth} solid ${popupBorderColor};
     }
 `.withBehaviors(
-    /*
-        Local Theme Behaviors to style the backdrop because it is not a decendent of the theme provider. As a result,
-        the backdrop cannot be styled using tokens directly. Note: The backdrop is only visible when modal = true.
-    */
-        themeBehavior(
-        // Light Theme
-            css`
-            dialog::backdrop {
-                background: ${hexToRgbaCssColor(Black91, 0.3)};
-            }
-        `,
-            // Dark Theme
-            css`
-            dialog::backdrop {
-                background: ${hexToRgbaCssColor(Black15, 0.3)};
-            }
-        `,
-            // Color Theme
-            css`
-            dialog::backdrop {
-                background: ${hexToRgbaCssColor(White, 0.3)};
-            }
-        `
-        )
-    );;
+            /*
+                Local Theme Behaviors to style the backdrop because it is not a decendent of the theme provider. As a result,
+                the backdrop cannot be styled using tokens directly. Note: The backdrop is only visible when modal = true.
+            */
+            themeBehavior(
+                Theme.light,
+                css`
+                dialog::backdrop {
+                    background: ${hexToRgbaCssColor(Black91, 0.3)};
+                }
+            `
+            ),
+            themeBehavior(
+                Theme.dark,
+                css`
+                dialog::backdrop {
+                    background: ${hexToRgbaCssColor(Black15, 0.3)};
+                }
+            `
+            ),
+            themeBehavior(
+                Theme.color,
+                css`
+                dialog::backdrop {
+                    background: ${hexToRgbaCssColor(White, 0.3)};
+                }
+            `
+            )
+        );

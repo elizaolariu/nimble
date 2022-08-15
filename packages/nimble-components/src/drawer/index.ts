@@ -136,7 +136,6 @@ export class Drawer extends FoundationElement {
     }
 
     private triggerAnimation(opening: boolean): void {
-        // TODO: close animation doesn't work with pressing escape with modal = true
         this.dialog.classList.remove('animation-complete');
         if (opening) {
             this.dialog.classList.add('open');
@@ -168,9 +167,10 @@ export class Drawer extends FoundationElement {
     private readonly documentKeyDownHandler = (event: KeyboardEvent): void => {
         if (event.key === keyEscape) {
             const shouldDismiss = this.canDismissWithKeyboard();
-            if (this.modal && !shouldDismiss) {
+            if (this.modal) {
                 event.preventDefault();
-            } else if (!this.modal && shouldDismiss) {
+            }
+            if (shouldDismiss) {
                 this.open = false;
             }
         }
