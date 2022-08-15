@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { attr } from '@microsoft/fast-element';
 import {
     DesignSystem,
@@ -15,9 +16,17 @@ declare global {
 }
 
 /**
+ * Symbol that is returned as the dialog close reason (from the Promise returned by show()) when
+ * the dialog was closed by pressing the ESC key (vs. calling the close() function).
+ */
+export const USER_DISMISSED: unique symbol = Symbol('user dismissed');
+export type UserDismissed = typeof USER_DISMISSED;
+
+/**
  * TODOs:
- * - close animation doesn't work with escape when modal = true
  * - turn off animations when disableAnimations = true or prefers reduced motion is set
+ * - figure out why exposing USER_DISMISSED isn't working correctly in Angular (duplicate export?)
+ * - expose parts of element so things can be individually styled, such as the dialog's border & drop shadow
  */
 
 /**
@@ -25,12 +34,46 @@ declare global {
  * which animates to be visible with a slide-in / slide-out animation.
  * Configured via 'location', 'state', 'modal', 'preventDismiss' properties.
  */
-export class Drawer extends FoundationElement {
+export class Drawer<CloseReason = void> extends FoundationElement {
     @attr
     public location: DrawerLocation = DrawerLocation.left;
 
-    @attr({ mode: 'boolean' })
-    public open = false;
+    /**
+     * True if the dialog is open/showing, false otherwise
+     */
+    public get open(): boolean {
+        return this.resolveShow !== undefined;
+    }
+
+    private resolveShow?: (reason: CloseReason | UserDismissed) => void;
+    private closeReason!: CloseReason | UserDismissed;
+
+    /**
+     * Opens the drawer
+     * @returns Promise that is resolved when the drawer is closed. The value of the resolved Promise is the reason value passed to the close() method, or
+     * USER_DISMISSED if the dialog was closed via the ESC key or clicking off the drawer.
+     */
+    public async show(): Promise<CloseReason | UserDismissed> {
+        if (this.open) {
+            throw new Error('Dialog is already open');
+        }
+        this.openDialog();
+        return new Promise((resolve, _reject) => {
+            this.resolveShow = resolve;
+        });
+    }
+
+    /**
+     * Closes the dialog
+     * @param reason An optional value indicating how/why the dialog was closed.
+     */
+    public close(reason: CloseReason): void {
+        if (!this.open) {
+            throw new Error('Dialog is not open');
+        }
+        this.closeReason = reason;
+        this.closeDialog();
+    }
 
     /**
     * Specifies that the drawer is modal and the page beneath the drawer in not interactable.
@@ -85,33 +128,15 @@ export class Drawer extends FoundationElement {
     }
 
     public override disconnectedCallback(): void {
-        this.closeDialog();
+        if (this.open) {
+            this.closeDialog(true);
+        }
     }
 
     public modalChanged(_prev: boolean | undefined, _next: boolean | undefined): void {
         if (this.open) {
             throw new Error('The \'modal\' property cannot be changed while the drawer is open.');
         }
-    }
-
-    public openChanged(_prev: boolean | undefined, _next: boolean | undefined): void {
-        if (!this.$fastController.isConnected) {
-            return;
-        }
-
-        if (this.open) {
-            this.openDialog();
-        } else {
-            this.closeDialog();
-        }
-    }
-
-    /**
-     * Handler for dialog closing.
-     * @internal
-     */
-    public closeHandler(_event: Event): void {
-        this.open = false;
     }
 
     private readonly documentKeyDownHandlerFunction = (event: Event): void => this.documentKeyDownHandler(event as KeyboardEvent);
@@ -129,10 +154,26 @@ export class Drawer extends FoundationElement {
         document.addEventListener(eventMouseDown, this.documentClickHandlerFunction);
     }
 
-    private closeDialog(): void {
-        this.triggerAnimation(false);
+    private closeDialog(force = false): void {
+        if (force) {
+            this.dialog.close();
+        } else {
+            const shouldClose = this.$emit(
+                'close',
+                {},
+                { bubbles: false, cancelable: true, composed: false }
+            );
+            if (!shouldClose) {
+                return;
+            }
+
+            this.triggerAnimation(false);
+        }
+
         document.removeEventListener(eventKeyDown, this.documentKeyDownHandlerFunction);
         document.removeEventListener(eventMouseDown, this.documentClickHandlerFunction);
+        this.resolveShow!(this.closeReason);
+        this.resolveShow = undefined;
     }
 
     private triggerAnimation(opening: boolean): void {
@@ -171,14 +212,16 @@ export class Drawer extends FoundationElement {
                 event.preventDefault();
             }
             if (shouldDismiss) {
-                this.open = false;
+                this.closeReason = USER_DISMISSED;
+                this.closeDialog();
             }
         }
     };
 
     private readonly documentClickHandler = (event: MouseEvent): void => {
         if (this.canDismissWithClick() && !this.isPointWithinDrawer(event.x, event.y)) {
-            this.open = false;
+            this.closeReason = USER_DISMISSED;
+            this.closeDialog();
         }
     };
 

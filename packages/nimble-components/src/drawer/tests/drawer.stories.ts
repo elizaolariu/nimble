@@ -15,8 +15,9 @@ import {
     standardPadding
 } from '../../theme-provider/design-tokens';
 import { DrawerDismissBehavior, DrawerLocation } from '../types';
-import type { Drawer } from '..';
+import { Drawer, USER_DISMISSED } from '..';
 import '../../all-components';
+import type { TextField } from '../../text-field';
 
 interface DrawerArgs {
     location: DrawerLocation;
@@ -25,8 +26,12 @@ interface DrawerArgs {
     clickDismiss: DrawerDismissBehavior;
     content: ExampleContentType;
     width: DrawerWidthOptions;
-    drawerRef: Drawer;
-    toggleDrawer: (x: Drawer) => void;
+    drawerRef: Drawer<string>;
+    textFieldRef: TextField;
+    openAndHandleResult: (
+        drawerRef: Drawer<string>,
+        textFieldRef: TextField
+    ) => void;
 }
 
 const simpleContent = html<DrawerArgs>`
@@ -35,7 +40,7 @@ const simpleContent = html<DrawerArgs>`
             This is a drawer which can slide in from either side of the screen
             and display custom content.
         </p>
-        <nimble-button @click="${x => { x.drawerRef.open = false; }}">Close</nimble-button>
+        <nimble-button @click="${x => x.drawerRef.close('Close pressed')}">Close</nimble-button>
     </section>
 `;
 
@@ -69,8 +74,8 @@ const headerFooterContent = html<DrawerArgs>`
         </p>
     </section>
     <footer>
-        <nimble-button @click="${x => { x.drawerRef.open = false; }}" appearance="ghost" class="cancel-button">Cancel</nimble-button>
-        <nimble-button @click="${x => { x.drawerRef.open = false; }}" appearance="outline">OK</nimble-button>
+        <nimble-button @click="${x => x.drawerRef.close('Cancel pressed')}" appearance="ghost" class="cancel-button">Cancel</nimble-button>
+        <nimble-button @click="${x => x.drawerRef.close('OK pressed')}" appearance="outline">OK</nimble-button>
     </footer>`;
 
 const content = {
@@ -113,9 +118,9 @@ const metadata: Meta<DrawerArgs> = {
         },
         actions: {
             handles: [
-                // Actions addon does not support non-bubbling events like cancel:
+                // Actions addon does not support non-bubbling events like close:
                 // https://github.com/storybookjs/storybook/issues/17881
-                // 'cancel'
+                // 'close''
             ]
         }
     },
@@ -135,11 +140,14 @@ const metadata: Meta<DrawerArgs> = {
             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 16px;"
         >
         <nimble-button
-            @click="${x => x.toggleDrawer(x.drawerRef)}"
+            @click="${x => x.openAndHandleResult(x.drawerRef, x.textFieldRef)}"
             class="code-hide"
         >
-            Show/Hide Drawer
-        </nimble-button>
+            Open
+        </nimble-button><div>
+        <nimble-text-field ${ref('textFieldRef')} readonly>
+            Close reason
+        </nimble-text-field>
         <nimble-text-field
             class="code-hide"
         >
@@ -199,7 +207,12 @@ const metadata: Meta<DrawerArgs> = {
                 disable: true
             }
         },
-        toggleDrawer: {
+        textFieldRef: {
+            table: {
+                disable: true
+            }
+        },
+        openAndHandleResult: {
             table: {
                 disable: true
             }
@@ -213,8 +226,10 @@ const metadata: Meta<DrawerArgs> = {
         content: ExampleContentType.simpleTextContent,
         width: DrawerWidthOptions.default,
         drawerRef: undefined,
-        toggleDrawer: (x: Drawer): void => {
-            x.open = !x.open;
+        textFieldRef: undefined,
+        openAndHandleResult: async (drawerRef, textFieldRef) => {
+            const reason = await drawerRef.show();
+            textFieldRef.value = reason === USER_DISMISSED ? 'User dismissed' : reason;
         }
     }
 };

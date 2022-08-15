@@ -1,5 +1,5 @@
 import { Component, Input, ViewChild } from '@angular/core';
-import { DrawerLocation, DrawerState, NimbleDrawerDirective } from '@ni/nimble-angular';
+import { DrawerLocation, NimbleDrawerDirective } from '@ni/nimble-angular';
 
 @Component({
     selector: 'example-nav-drawer',
@@ -13,11 +13,15 @@ export class NavDrawerComponent {
     @ViewChild('drawerReference', { read: NimbleDrawerDirective }) public drawer: NimbleDrawerDirective;
 
     public open(): void {
-        this.drawer.show();
+        void this.drawer.show();
     }
 
     public togglePinned(): void {
         this.isDrawerPinned = !this.isDrawerPinned;
-        this.drawer.state = this.isDrawerPinned ? DrawerState.opened : DrawerState.closed;
+        if (this.isDrawerPinned) {
+            void this.drawer.show();
+        } else {
+            this.drawer.close();
+        }
     }
 }

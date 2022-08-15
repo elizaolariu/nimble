@@ -1,163 +1,163 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import type { BooleanValueOrAttribute } from '../../utilities/template-value-helpers';
-import { DrawerState, DrawerLocation, Drawer, NimbleDrawerDirective } from '../nimble-drawer.directive';
-import { NimbleDrawerModule } from '../nimble-drawer.module';
+// import { Component, ElementRef, ViewChild } from '@angular/core';
+// import { ComponentFixture, TestBed } from '@angular/core/testing';
+// import type { BooleanValueOrAttribute } from '../../utilities/template-value-helpers';
+// import { DrawerState, DrawerLocation, Drawer, NimbleDrawerDirective } from '../nimble-drawer.directive';
+// import { NimbleDrawerModule } from '../nimble-drawer.module';
 
-describe('Nimble drawer directive', () => {
-    describe('with property bound values', () => {
-        @Component({
-            template: `
-                <nimble-drawer #drawerConfigured [location]="drawerLocation" [(state)]="drawerState" [modal]="isDrawerModal" [preventDismiss]="drawerPreventDismiss" (cancel)="canceled()">
-                    Drawer Content
-                </nimble-drawer>
-                <nimble-drawer #drawerUnconfigured>
-                    Drawer Content
-                </nimble-drawer>
-             `
-        })
-        class TestHostComponent {
-            @ViewChild('drawerConfigured', { static: true }) public drawerConfigured: ElementRef<Drawer>;
-            @ViewChild('drawerUnconfigured', { static: true }) public drawerUnconfigured: ElementRef<Drawer>;
-            public drawerLocation: DrawerLocation = DrawerLocation.right;
-            public drawerState: DrawerState = DrawerState.opened;
-            public isDrawerModal = false;
-            public drawerPreventDismiss = false;
-            public canceled(): void {}
-        }
+// describe('Nimble drawer directive', () => {
+//     describe('with property bound values', () => {
+//         @Component({
+//             template: `
+//                 <nimble-drawer #drawerConfigured [location]="drawerLocation" [(state)]="drawerState" [modal]="isDrawerModal" [preventDismiss]="drawerPreventDismiss" (cancel)="canceled()">
+//                     Drawer Content
+//                 </nimble-drawer>
+//                 <nimble-drawer #drawerUnconfigured>
+//                     Drawer Content
+//                 </nimble-drawer>
+//              `
+//         })
+//         class TestHostComponent {
+//             @ViewChild('drawerConfigured', { static: true }) public drawerConfigured: ElementRef<Drawer>;
+//             @ViewChild('drawerUnconfigured', { static: true }) public drawerUnconfigured: ElementRef<Drawer>;
+//             public drawerLocation: DrawerLocation = DrawerLocation.right;
+//             public drawerState: DrawerState = DrawerState.opened;
+//             public isDrawerModal = false;
+//             public drawerPreventDismiss = false;
+//             public canceled(): void {}
+//         }
 
-        let fixture: ComponentFixture<TestHostComponent>;
-        let testHostComponent: TestHostComponent;
-        let drawerConfigured: Drawer;
-        let drawerUnconfigured: Drawer;
+//         let fixture: ComponentFixture<TestHostComponent>;
+//         let testHostComponent: TestHostComponent;
+//         let drawerConfigured: Drawer;
+//         let drawerUnconfigured: Drawer;
 
-        beforeEach(() => {
-            TestBed.configureTestingModule({
-                declarations: [TestHostComponent],
-                imports: [NimbleDrawerModule]
-            });
-        });
+//         beforeEach(() => {
+//             TestBed.configureTestingModule({
+//                 declarations: [TestHostComponent],
+//                 imports: [NimbleDrawerModule]
+//             });
+//         });
 
-        beforeEach(() => {
-            fixture = TestBed.createComponent(TestHostComponent);
-            testHostComponent = fixture.componentInstance;
-            drawerConfigured = testHostComponent.drawerConfigured.nativeElement;
-            drawerUnconfigured = testHostComponent.drawerUnconfigured.nativeElement;
-            fixture.detectChanges();
-        });
+//         beforeEach(() => {
+//             fixture = TestBed.createComponent(TestHostComponent);
+//             testHostComponent = fixture.componentInstance;
+//             drawerConfigured = testHostComponent.drawerConfigured.nativeElement;
+//             drawerUnconfigured = testHostComponent.drawerUnconfigured.nativeElement;
+//             fixture.detectChanges();
+//         });
 
-        async function waitForDrawerState(drawer: Drawer, state: DrawerState): Promise<void> {
-            return new Promise(resolve => {
-                drawer.addEventListener('state-change', function handler() {
-                    if (drawer.state === state) {
-                        drawer.removeEventListener('state-change', handler);
-                        resolve();
-                    }
-                });
-            });
-        }
+//         async function waitForDrawerState(drawer: Drawer, state: DrawerState): Promise<void> {
+//             return new Promise(resolve => {
+//                 drawer.addEventListener('state-change', function handler() {
+//                     if (drawer.state === state) {
+//                         drawer.removeEventListener('state-change', handler);
+//                         resolve();
+//                     }
+//                 });
+//             });
+//         }
 
-        it('custom element is defined', () => {
-            expect(customElements.get('nimble-drawer')).not.toBeUndefined();
-        });
+//         it('custom element is defined', () => {
+//             expect(customElements.get('nimble-drawer')).not.toBeUndefined();
+//         });
 
-        it('the Drawer DOM element has expected default property values when no directive properties are set', () => {
-            expect(drawerUnconfigured.location).toBe(DrawerLocation.left);
-            expect(drawerUnconfigured.state).toBe(DrawerState.closed);
-            expect(drawerUnconfigured.modal).toBe(true);
-        });
+//         it('the Drawer DOM element has expected default property values when no directive properties are set', () => {
+//             expect(drawerUnconfigured.location).toBe(DrawerLocation.left);
+//             expect(drawerUnconfigured.state).toBe(DrawerState.closed);
+//             expect(drawerUnconfigured.modal).toBe(true);
+//         });
 
-        it('the Drawer DOM element reflects correct initial state set via NimbleDrawerDirective', () => {
-            expect(drawerConfigured.location).toBe(DrawerLocation.right);
-            expect(drawerConfigured.state).toBe(DrawerState.opened);
-            expect(drawerConfigured.modal).toBe(false);
-        });
+//         it('the Drawer DOM element reflects correct initial state set via NimbleDrawerDirective', () => {
+//             expect(drawerConfigured.location).toBe(DrawerLocation.right);
+//             expect(drawerConfigured.state).toBe(DrawerState.opened);
+//             expect(drawerConfigured.modal).toBe(false);
+//         });
 
-        describe('when directive properties change, the drawer DOM element is updated', () => {
-            it('for location', () => {
-                testHostComponent.drawerLocation = DrawerLocation.left;
-                fixture.detectChanges();
+//         describe('when directive properties change, the drawer DOM element is updated', () => {
+//             it('for location', () => {
+//                 testHostComponent.drawerLocation = DrawerLocation.left;
+//                 fixture.detectChanges();
 
-                expect(drawerConfigured.location).toBe(DrawerLocation.left);
-            });
+//                 expect(drawerConfigured.location).toBe(DrawerLocation.left);
+//             });
 
-            it('for state', () => {
-                testHostComponent.drawerState = DrawerState.closed;
-                fixture.detectChanges();
+//             it('for state', () => {
+//                 testHostComponent.drawerState = DrawerState.closed;
+//                 fixture.detectChanges();
 
-                expect(drawerConfigured.state).toBe(DrawerState.closed);
-            });
+//                 expect(drawerConfigured.state).toBe(DrawerState.closed);
+//             });
 
-            it('for modal', () => {
-                testHostComponent.isDrawerModal = true;
-                fixture.detectChanges();
+//             it('for modal', () => {
+//                 testHostComponent.isDrawerModal = true;
+//                 fixture.detectChanges();
 
-                expect(drawerConfigured.modal).toBe(true);
-            });
+//                 expect(drawerConfigured.modal).toBe(true);
+//             });
 
-            it('for preventDismiss', () => {
-                testHostComponent.drawerPreventDismiss = true;
-                fixture.detectChanges();
+//             it('for preventDismiss', () => {
+//                 testHostComponent.drawerPreventDismiss = true;
+//                 fixture.detectChanges();
 
-                expect(drawerConfigured.preventDismiss).toBe(true);
-            });
-        });
+//                 expect(drawerConfigured.preventDismiss).toBe(true);
+//             });
+//         });
 
-        it('when "location" property changes on drawer DOM element, directive state updates correctly', async () => {
-            drawerConfigured.state = DrawerState.closing;
-            await waitForDrawerState(drawerConfigured, DrawerState.closed);
-            fixture.detectChanges();
+//         it('when "location" property changes on drawer DOM element, directive state updates correctly', async () => {
+//             drawerConfigured.state = DrawerState.closing;
+//             await waitForDrawerState(drawerConfigured, DrawerState.closed);
+//             fixture.detectChanges();
 
-            expect(testHostComponent.drawerState).toEqual(DrawerState.closed);
-        });
+//             expect(testHostComponent.drawerState).toEqual(DrawerState.closed);
+//         });
 
-        it('when drawer overlay is clicked, cancel output/event is triggered', async () => {
-            const canceledSpy = spyOn(testHostComponent, 'canceled');
-            const drawerOverlay = drawerConfigured.shadowRoot!.querySelector('.overlay')!;
-            (drawerOverlay as HTMLElement).click();
+//         it('when drawer overlay is clicked, cancel output/event is triggered', async () => {
+//             const canceledSpy = spyOn(testHostComponent, 'canceled');
+//             const drawerOverlay = drawerConfigured.shadowRoot!.querySelector('.overlay')!;
+//             (drawerOverlay as HTMLElement).click();
 
-            expect(canceledSpy).toHaveBeenCalledTimes(1);
-        });
-    });
+//             expect(canceledSpy).toHaveBeenCalledTimes(1);
+//         });
+//     });
 
-    describe('with attribute bound values', () => {
-        @Component({
-            template: `
-            <nimble-drawer #drawerConfigured [attr.prevent-dismiss]="drawerPreventDismiss">
-                Drawer Content
-            </nimble-drawer>
-            `
-        })
-        class TestHostComponent {
-            @ViewChild('drawerConfigured', { read: NimbleDrawerDirective }) public directive: NimbleDrawerDirective;
-            @ViewChild('drawerConfigured', { read: ElementRef }) public elementRef: ElementRef<Drawer>;
-            public drawerPreventDismiss: BooleanValueOrAttribute = null;
-        }
+//     describe('with attribute bound values', () => {
+//         @Component({
+//             template: `
+//             <nimble-drawer #drawerConfigured [attr.prevent-dismiss]="drawerPreventDismiss">
+//                 Drawer Content
+//             </nimble-drawer>
+//             `
+//         })
+//         class TestHostComponent {
+//             @ViewChild('drawerConfigured', { read: NimbleDrawerDirective }) public directive: NimbleDrawerDirective;
+//             @ViewChild('drawerConfigured', { read: ElementRef }) public elementRef: ElementRef<Drawer>;
+//             public drawerPreventDismiss: BooleanValueOrAttribute = null;
+//         }
 
-        let fixture: ComponentFixture<TestHostComponent>;
-        let directive: NimbleDrawerDirective;
-        let nativeElement: Drawer;
+//         let fixture: ComponentFixture<TestHostComponent>;
+//         let directive: NimbleDrawerDirective;
+//         let nativeElement: Drawer;
 
-        beforeEach(() => {
-            TestBed.configureTestingModule({
-                declarations: [TestHostComponent],
-                imports: [NimbleDrawerModule]
-            });
-            fixture = TestBed.createComponent(TestHostComponent);
-            fixture.detectChanges();
-            directive = fixture.componentInstance.directive;
-            nativeElement = fixture.componentInstance.elementRef.nativeElement;
-        });
+//         beforeEach(() => {
+//             TestBed.configureTestingModule({
+//                 declarations: [TestHostComponent],
+//                 imports: [NimbleDrawerModule]
+//             });
+//             fixture = TestBed.createComponent(TestHostComponent);
+//             fixture.detectChanges();
+//             directive = fixture.componentInstance.directive;
+//             nativeElement = fixture.componentInstance.elementRef.nativeElement;
+//         });
 
-        it('can be configured with attribute binding for preventDismiss', () => {
-            expect(directive.preventDismiss).toBeFalse();
-            expect(nativeElement.preventDismiss).toBeFalse();
+//         it('can be configured with attribute binding for preventDismiss', () => {
+//             expect(directive.preventDismiss).toBeFalse();
+//             expect(nativeElement.preventDismiss).toBeFalse();
 
-            fixture.componentInstance.drawerPreventDismiss = '';
-            fixture.detectChanges();
+//             fixture.componentInstance.drawerPreventDismiss = '';
+//             fixture.detectChanges();
 
-            expect(directive.preventDismiss).toBeTrue();
-            expect(nativeElement.preventDismiss).toBeTrue();
-        });
-    });
-});
+//             expect(directive.preventDismiss).toBeTrue();
+//             expect(nativeElement.preventDismiss).toBeTrue();
+//         });
+//     });
+// });

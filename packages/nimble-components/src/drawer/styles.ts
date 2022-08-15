@@ -24,7 +24,7 @@ export const styles = css`
         position: absolute;
         top: 0;
         bottom: 0;
-        width: ${drawerWidth};
+        width: auto;
         height: 100%;
         outline: none;
         font: ${bodyFont};
@@ -57,14 +57,16 @@ export const styles = css`
         width: ${drawerWidth};
     }
 
+    dialog {
+        color: inherit;
+    }
+
     dialog[open] {
         width: ${drawerWidth};
         z-index: 9999;
         position: relative;
         top: 0px;
         bottom: 0px;
-        display: flex;
-        flex-direction: column;
         border-radius: 0px;
         border-width: 0px;
         height: 100%;
@@ -82,6 +84,9 @@ export const styles = css`
 
     .dialog-contents {
         width: ${drawerWidth};
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     dialog.animation-complete .dialog-contents {

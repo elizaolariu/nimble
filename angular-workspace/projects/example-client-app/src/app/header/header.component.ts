@@ -24,7 +24,7 @@ export class HeaderComponent {
     }
 
     public onUserSettingsSelected(): void {
-        this.userSettingsDrawer.show();
+        void this.userSettingsDrawer.show();
         this.toggleMenuHidden();
     }
 
@@ -33,7 +33,7 @@ export class HeaderComponent {
     }
 
     public closeButtonClicked(): void {
-        this.userSettingsDrawer.hide();
+        this.userSettingsDrawer.close();
     }
 
     public onLogoutSelected(): void {

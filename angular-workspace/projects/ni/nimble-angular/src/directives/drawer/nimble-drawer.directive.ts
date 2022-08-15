@@ -1,10 +1,10 @@
 import { Directive, ElementRef, EventEmitter, HostListener, Input, Output, Renderer2 } from '@angular/core';
-import type { Drawer } from '@ni/nimble-components/dist/esm/drawer';
-import { DrawerLocation, DrawerState } from '@ni/nimble-components/dist/esm/drawer/types';
+import type { Drawer, UserDismissed } from '@ni/nimble-components/dist/esm/drawer';
+import { DrawerLocation, DrawerDismissBehavior } from '@ni/nimble-components/dist/esm/drawer/types';
 import { BooleanValueOrAttribute, toBooleanProperty } from '../utilities/template-value-helpers';
 
 export type { Drawer };
-export { DrawerLocation, DrawerState };
+export { DrawerLocation, DrawerDismissBehavior };
 
 /**
  * Directive to provide Angular integration for the drawer.
@@ -21,12 +21,24 @@ export class NimbleDrawerDirective {
         this.renderer.setProperty(this.elementRef.nativeElement, 'location', value);
     }
 
-    public get state(): DrawerState {
-        return this.elementRef.nativeElement.state;
+    public get keyboardDismiss(): DrawerDismissBehavior {
+        return this.elementRef.nativeElement.keyboardDismiss;
     }
 
-    @Input() public set state(value: DrawerState) {
-        this.renderer.setProperty(this.elementRef.nativeElement, 'state', value);
+    // clickDismiss property intentionally maps to the click-dismiss attribute
+    // eslint-disable-next-line @angular-eslint/no-input-rename
+    @Input('keyboard-dismiss') public set keyboardDismiss(value: DrawerDismissBehavior) {
+        this.renderer.setProperty(this.elementRef.nativeElement, 'keyboardDismiss', value);
+    }
+
+    public get clickDismiss(): DrawerDismissBehavior {
+        return this.elementRef.nativeElement.clickDismiss;
+    }
+
+    // clickDismiss property intentionally maps to the click-dismiss attribute
+    // eslint-disable-next-line @angular-eslint/no-input-rename
+    @Input('click-dismiss') public set clickDismiss(value: DrawerDismissBehavior) {
+        this.renderer.setProperty(this.elementRef.nativeElement, 'clickDismiss', value);
     }
 
     public get modal(): boolean {
@@ -37,31 +49,21 @@ export class NimbleDrawerDirective {
         this.renderer.setProperty(this.elementRef.nativeElement, 'modal', toBooleanProperty(value));
     }
 
-    public get preventDismiss(): boolean {
-        return this.elementRef.nativeElement.preventDismiss;
-    }
-
-    // preventDismiss property intentionally maps to the prevent-dismiss attribute
-    // eslint-disable-next-line @angular-eslint/no-input-rename
-    @Input('prevent-dismiss') public set preventDismiss(value: BooleanValueOrAttribute) {
-        this.renderer.setProperty(this.elementRef.nativeElement, 'preventDismiss', toBooleanProperty(value));
-    }
-
-    @Output() public stateChange = new EventEmitter<DrawerState>();
+    @Output() public closing = new EventEmitter<void>();
     public constructor(private readonly renderer: Renderer2, private readonly elementRef: ElementRef<Drawer>) {}
 
-    public show(): void {
-        this.state = DrawerState.opening;
+    public async show(): Promise<unknown> {
+        return this.elementRef.nativeElement.show();
     }
 
-    public hide(): void {
-        this.state = DrawerState.closing;
+    public close(): void {
+        this.elementRef.nativeElement.close();
     }
 
-    @HostListener('state-change', ['$event'])
-    public onStateChanged($event: Event): void {
+    @HostListener('close', ['$event'])
+    public onClose($event: Event): void {
         if ($event.target === this.elementRef.nativeElement) {
-            this.stateChange.emit(this.state);
+            this.closing.emit();
         }
     }
 }

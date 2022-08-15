@@ -10,7 +10,6 @@ export const template = html<Drawer>`
         aria-describedby="${x => x.ariaDescribedby}"
         aria-labelledby="${x => x.ariaLabelledby}"
         ${ref('dialog')}
-        @close="${(x, c) => x.closeHandler(c.event)}"
     >
         <div class="dialog-contents">
             <slot></slot>
