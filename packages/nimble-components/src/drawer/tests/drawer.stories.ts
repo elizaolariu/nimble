@@ -14,16 +14,14 @@ import {
     drawerWidth,
     standardPadding
 } from '../../theme-provider/design-tokens';
-import { DrawerDismissBehavior, DrawerLocation } from '../types';
+import { DrawerLocation } from '../types';
 import { Drawer, USER_DISMISSED } from '..';
 import '../../all-components';
 import type { TextField } from '../../text-field';
 
 interface DrawerArgs {
     location: DrawerLocation;
-    modal: boolean;
-    keyboardDismiss: DrawerDismissBehavior;
-    clickDismiss: DrawerDismissBehavior;
+    preventDismiss: boolean;
     content: ExampleContentType;
     width: DrawerWidthOptions;
     drawerRef: Drawer<string>;
@@ -117,20 +115,14 @@ const metadata: Meta<DrawerArgs> = {
                 'https://xd.adobe.com/view/33ffad4a-eb2c-4241-b8c5-ebfff1faf6f6-66ac/screen/730cdeb8-a4b5-4dcc-9fe4-718a75da7aff/specs/'
         },
         actions: {
-            handles: [
-                // Actions addon does not support non-bubbling events like close:
-                // https://github.com/storybookjs/storybook/issues/17881
-                // 'close''
-            ]
+            handles: []
         }
     },
     // prettier-ignore
     render: createUserSelectedThemeStory(html`
         <nimble-drawer
             ${ref('drawerRef')}
-            ?modal="${x => x.modal}"
-            keyboard-dismiss="${x => x.keyboardDismiss}"
-            click-dismiss="${x => x.clickDismiss}"
+            ?prevent-dismiss="${x => x.preventDismiss}"
             location="${x => x.location}"
             style="${x => `${drawerWidth.cssCustomProperty}:${widths[x.width]};`}"
         >
@@ -145,13 +137,12 @@ const metadata: Meta<DrawerArgs> = {
         >
             Open
         </nimble-button><div>
-        <nimble-text-field ${ref('textFieldRef')} readonly>
-            Close reason
-        </nimble-text-field>
         <nimble-text-field
+            ${ref('textFieldRef')}
+            readonly
             class="code-hide"
         >
-            Example application content
+            Close reason
         </nimble-text-field>
     `),
     argTypes: {
@@ -173,14 +164,6 @@ const metadata: Meta<DrawerArgs> = {
                         'Header/Content/Footer Example'
                 }
             }
-        },
-        keyboardDismiss: {
-            options: Object.values(DrawerDismissBehavior),
-            control: { type: 'select' }
-        },
-        clickDismiss: {
-            options: Object.values(DrawerDismissBehavior),
-            control: { type: 'select' }
         },
         width: {
             description: widthDescription,
@@ -220,9 +203,7 @@ const metadata: Meta<DrawerArgs> = {
     },
     args: {
         location: DrawerLocation.left,
-        modal: true,
-        keyboardDismiss: DrawerDismissBehavior.default,
-        clickDismiss: DrawerDismissBehavior.default,
+        preventDismiss: false,
         content: ExampleContentType.simpleTextContent,
         width: DrawerWidthOptions.default,
         drawerRef: undefined,

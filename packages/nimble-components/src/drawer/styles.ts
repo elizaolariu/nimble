@@ -95,6 +95,12 @@ export const styles = css`
 
     dialog[open]::backdrop {
         opacity:0;
+        ${
+            /*
+                The largeDelay token cannot be used on the backdrop because it is not
+                a descendant of the nimble-theme-provider
+            */ ''
+        }
         transition: opacity 0.25s ease-in;
     }
 
@@ -146,8 +152,8 @@ export const styles = css`
     }
 `.withBehaviors(
             /*
-                Local Theme Behaviors to style the backdrop because it is not a decendent of the theme provider. As a result,
-                the backdrop cannot be styled using tokens directly. Note: The backdrop is only visible when modal = true.
+                Local Theme Behaviors to style the backdrop because it is not a descendent of the theme provider. As a result,
+                the backdrop cannot be styled using tokens directly.
             */
             themeBehavior(
                 Theme.light,
