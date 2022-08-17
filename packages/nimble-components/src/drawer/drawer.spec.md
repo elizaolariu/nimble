@@ -2,11 +2,13 @@
 
 ## Overview
 
-The `nimble-drawer` is a specialized dialog designed to slide in from either side of the page. It is typically used for navigation or configuration panes.
+The `nimble-drawer` is a specialized modal dialog designed to slide in from either side of the page. It is typically used for configuration panes.
 
 ### Background
 
 There is an existing drawer within nimble that is based on the FAST dialog. A number of bugs have been reported with the current drawer, and the best way to address them is to re-write the drawer with a custom template and to not inherit from the FAST dialog.
+
+As part of the re-write, the drawer's API and recommended usage will be scoped specifically for use as a modal pane.
 
 Relevant bugs:
 - [Change drawer to use dialog element](https://github.com/ni/nimble/issues/592)
@@ -24,8 +26,8 @@ Relevant bugs:
 
 ### Non-goals
 
-- The drawer will not have a first-class way to be pinned, like the SLE navigation pane.
 - The drawer will not support a non-modal mode.
+- The drawer will not have a first-class way to be pinned, like the SLE navigation pane.
 - The drawer will not support closing when the user clicks off of it.
   
 ### Features
@@ -34,16 +36,17 @@ Relevant bugs:
 - The page beneath the drawer cannot be interacted with or focused in any way.
 - The drawer will automatically focus an element within the drawer when it is opened.
 - The drawer can be configured to prevent dismissing through non-programatic means (i.e. it does not dismiss when the user presses `Esc`).
+- The drawer will animate into and out of the page.
 
 ### Risks and Challenges
 
-*Notable risks or challenges associated with implementing the component. Would we need to make any breaking changes in order to achieve this component's goals?*
+*None identified*
 
 ### Prior Art/Examples
 
 Today the `nimble-drawer` is used within SLE for the navgiation pane, which has a pinned & non-pinned modes. It is also used today for a number of configuration slide-outs within SLE.
 
-The `nimble-drawer` will no longer be used for the navigation pane.
+The `nimble-drawer` will no longer be used for the navigation pane. A separate component will be created within systemlink-lib-angular for the navigation pane because it does not follow the same UX rules as we need for all other drawers in the product.
 
 ---
 
@@ -62,7 +65,7 @@ The `nimble-drawer` provides a control for place arbitrary content that should b
         -   The attribute will be backed by an enum named `DrawerLocation` with values `left` and `right`.
         -   The default value is `left`.
     -   `preventDismiss`
-        -   A boolean attribute to configure whether or not the drawer is dismissible via the `Esc` key.
+        -   A boolean attribute to configure whether or not the drawer is dismissible via the `Esc` key, or any other dismiss action that is supported in the future.
         -   The default value is `false`.
 - *Methods*
     -   `show()`
@@ -75,8 +78,6 @@ The `nimble-drawer` provides a control for place arbitrary content that should b
     - *none*
 - *CSS Classes and CSS Custom Properties that affect the component*
     - *none*
-
-*Consider high and low-level APIs. Attempt to design a powerful and extensible low-level API with a high-level API for developer/designer ergonomics and simplicity.*
 
 ### Anatomy 
 
@@ -91,7 +92,6 @@ The drawer's template will consist of a `<dialog>` containing the default `<slot
     -   The existing styling for slotted `<header>`, `<section>`, and `<footer>` elements will be kept.
 -   _CSS Parts_
     -   *(none)*
-
 
 ### Angular integration 
 
@@ -109,7 +109,7 @@ Styling will be applied to give drawers a consistent border, shadow, and backgro
 
 ## Implementation
 
-The drawer will leverage the native `<dialog>` element. This provides the auto-focus behavior required, the modal behavior, and a backdrop when it is modal.
+The drawer will leverage the native `<dialog>` element. This provides the desired auto-focus behavior, the modal behavior, and a backdrop.
 
 Alternatively, we could continue to use the FAST dialog to back the drawer, but this has a number of issues associated with it (as illustrated by the list of bugs at the top of this document).
 
@@ -126,7 +126,7 @@ Hidden/visible
 - Focus behavior will be inherited from the native `<dialog>` element including:
     - auto-focusing an element within the drawer
     - diabling the ability to focus elements outside of the drawer
-- By default, the `Esc` key will close the drawer, but this behavior can be controlled through the `preventDismiss` attribute
+- By default, the `Esc` key will close the drawer, but this behavior can be controlled through the `preventDismiss` attribute.
 - The `<dialog>` in the shadow root will automatically have `aria-modal="true"` configured on it when `showModal` is called to open it.
 - The client should set an `aria-label` on the `nimble-drawer`, which will be reflected onto the `<dialog>` element within the shadow root.
 
@@ -136,11 +136,11 @@ There are no globalization considerations.
 
 ### Security
 
-There are no globalization considerations.
+There are no security considerations.
 
 ### Performance
 
-There are no globalization considerations.
+There are no performance considerations.
 
 ### Dependencies
 
