@@ -106,6 +106,7 @@ export class Dialog<CloseReason = void> extends FoundationElement {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
+// @ts-ignore
 export interface Dialog extends ARIAGlobalStatesAndProperties {}
 applyMixins(Dialog, ARIAGlobalStatesAndProperties);
 

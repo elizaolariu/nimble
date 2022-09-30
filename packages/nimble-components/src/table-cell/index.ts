@@ -46,15 +46,25 @@ export class TableCell extends FoundationElement {
         super();
     }
 
+    public override connectedCallback(): void {
+        if (this._cellData !== undefined) {
+            this.updateCellView();
+        }
+    }
+
     public override disconnectedCallback(): void {
         this.disconnectCellView();
     }
 
     private updateCellView(): void {
-        this.disconnectCellView();
-        this.customCellView = this.cellItemTemplate?.create(this);
-        this.customCellView?.bind(this, defaultExecutionContext);
-        this.customCellView?.appendTo(this.shadowRoot!);
+        const alreadyConnected = this.customCellView !== undefined;
+        if (!alreadyConnected) {
+            this.customCellView = this.cellItemTemplate?.create(this);
+            this.customCellView?.bind(this, defaultExecutionContext);
+        }
+        if (!alreadyConnected) {
+            this.customCellView?.appendTo(this.shadowRoot!);
+        }
     }
 
     private disconnectCellView(): void {

@@ -45,9 +45,9 @@ export class Select extends FoundationSelect {
         }
     }
 
-    private maxHeightChanged(): void {
-        this.updateListboxMaxHeightCssVariable();
-    }
+    // private maxHeightChanged(): void {
+    //     this.updateListboxMaxHeightCssVariable();
+    // }
 
     private updateListboxMaxHeightCssVariable(): void {
         if (this.listbox) {

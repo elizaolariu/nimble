@@ -1,4 +1,4 @@
-import { Observable, observable, ViewTemplate } from '@microsoft/fast-element';
+import { observable, Observable, ViewTemplate, css } from '@microsoft/fast-element';
 import { DataGridCell, DesignSystem, FoundationElement } from '@microsoft/fast-foundation';
 import {
     ColumnDef,
@@ -14,6 +14,7 @@ import {
     Column,
     Row,
 } from '@tanstack/table-core';
+import { VirtualList, virtualListTemplate } from '../virtual-list';
 import { template } from './template';
 import { styles } from './styles';
 import type { TableCell } from '../table-cell';
@@ -44,10 +45,8 @@ export interface TableHeader {
 }
 
 export interface TableRow {
-    id?: string;
-    index: number;
-    visibleCells: TableCell[];
     row: Row<unknown>;
+    parent: Table;
 }
 
 export interface ColumnSortState {
@@ -59,10 +58,20 @@ interface ObjectInterface {
     [key: string]: unknown;
 }
 
+const virtualListStyle = css`
+    .container {
+        position: relative;
+    }
+`;
+
 /**
  * Table
  */
 export class Table extends FoundationElement {
+    /** @internal */
+    @observable
+    public readonly virtualList: VirtualList | undefined;
+
     private readonly table: TanstackTable<unknown>;
     private _data: unknown[] = [];
     private _columns: TableColumn[] = [];
@@ -93,6 +102,11 @@ export class Table extends FoundationElement {
             renderFallbackValue: null,
         };
         this.table = createTable(this._options);
+    }
+
+    public override connectedCallback(): void {
+        super.connectedCallback();
+        this.virtualList?.addEventListener('scroll', this.handleScroll, { passive: true, capture: true });
     }
 
     public get data(): unknown[] {
@@ -130,6 +144,7 @@ export class Table extends FoundationElement {
         this.update(this.table.initialState);
         this.refreshRows();
         this.refreshHeaders();
+        this.table.getColumn(this.columns[0]?.columnDataKey ?? '').toggleSorting();
         this.ready = true;
         Observable.notify(this, 'ready');
     }
@@ -184,7 +199,7 @@ export class Table extends FoundationElement {
 
     private refreshRows(): void {
         const rows = this.table.getRowModel().rows;
-        this.tableRows = rows.map(row => { return ({ row, id: Math.random().toString() } as TableRow); });
+        this.tableRows = rows.map(row => { return ({ row, parent: this } as TableRow); });
     }
 
     private refreshHeaders(): void {
@@ -210,6 +225,10 @@ export class Table extends FoundationElement {
             },
         }));
     };
+
+    private readonly handleScroll = (_: Event): void => {
+        this.virtualList?.requestPositionUpdates();
+    };
 }
 
 const nimbleTable = Table.compose({
@@ -219,3 +238,12 @@ const nimbleTable = Table.compose({
 });
 
 DesignSystem.getOrCreate().withPrefix('nimble').register(nimbleTable());
+
+export const fastVirtualList = VirtualList.compose({
+    baseName: 'virtual-list',
+    baseClass: VirtualList,
+    template: virtualListTemplate,
+    styles: virtualListStyle
+});
+
+DesignSystem.getOrCreate().withPrefix('fast').register(fastVirtualList());

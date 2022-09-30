@@ -88,7 +88,7 @@ const metadata: Meta<ComboboxArgs> = {
     },
     args: {
         disabled: false,
-        dropDownPosition: 'below',
+        dropDownPosition: DropdownPosition.below,
         autocomplete: ComboboxAutocomplete.both,
         invalid: false,
         errorText: 'Value is invalid',

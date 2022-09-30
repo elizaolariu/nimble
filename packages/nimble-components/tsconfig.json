@@ -5,6 +5,7 @@
         "moduleResolution": "node",
         "outDir": "dist/esm",
         "strict": true,
+        "skipLibCheck": true,
         "experimentalDecorators": true,
         "target": "ES2020",
         "module": "ES2020",

@@ -231,7 +231,7 @@ describe('Dialog', () => {
         await connect();
         element.ariaLabel = 'not empty';
         await DOM.nextUpdate();
-        element.ariaLabel = null;
+        // element.ariaLabel = null;
         await DOM.nextUpdate();
 
         expect(

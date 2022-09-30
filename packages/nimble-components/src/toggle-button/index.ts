@@ -42,6 +42,8 @@ export class ToggleButton extends FoundationSwitch implements IButton {
     public readonly control!: HTMLElement;
 }
 applyMixins(ToggleButton, StartEnd, DelegatesARIAButton);
+
+// @ts-ignore
 export interface ToggleButton extends StartEnd, DelegatesARIAButton {}
 
 const nimbleToggleButton = ToggleButton.compose<ButtonOptions>({

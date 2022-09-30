@@ -40,7 +40,7 @@ export const iconMetadata: {
     IconArrowRotateRight: {
         tags: ['refresh']
     },
-    IconArrowURotateLeft: {
+    IconArrowUrotateLeft: {
         tags: ['update']
     },
     IconArrowUpLeftAndArrowDownRight: {

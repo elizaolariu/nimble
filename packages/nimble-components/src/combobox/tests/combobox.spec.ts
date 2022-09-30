@@ -199,7 +199,7 @@ describe('Combobox', () => {
         element.ariaLabel = expectedLabel;
         await DOM.nextUpdate();
 
-        element.ariaLabel = null;
+        // element.ariaLabel = null;
         await DOM.nextUpdate();
 
         const inputElement = element.shadowRoot?.querySelector('.selected-value');

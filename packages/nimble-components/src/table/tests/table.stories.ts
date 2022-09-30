@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/html';
-import { withXD } from 'storybook-addon-xd-designs';
 import '../../all-components';
 import { html } from '@microsoft/fast-element';
 import { createUserSelectedThemeStory } from '../../utilities/tests/storybook';
@@ -20,14 +19,16 @@ const metadata: Meta<TableArgs> = {
     },
     // prettier-ignore
     render: createUserSelectedThemeStory(html`
-        <nimble-table style="max-height: 300px"
-            :data="${x => x.data}"
-            :columns="${x => x.columns}"
-        >
-        </nimble-table>
+        <div style="display: flex; flex-direction: row;">
+            <nimble-table style="max-height: 600px;"
+                :data="${x => x.data}"
+                :columns="${x => x.columns}"
+            > 
+            </nimble-table>
+        </div>
     `),
     args: {
-        data: makeData(100),
+        data: makeData(50),
         columns: getColumns()
     }
 };
