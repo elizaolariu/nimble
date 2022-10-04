@@ -102,6 +102,7 @@ export class Table extends FoundationElement {
     private _rowOffset = 0;
     private readonly _rowHeight = 32;
     private resizeObserver?: ResizeObserver;
+    private intersectionObserver?: IntersectionObserver;
     private _currentRowElements: TableRow[] = [];
     private _elementBufferSize = 5;
     public totalListSize = 0;
@@ -148,6 +149,12 @@ export class Table extends FoundationElement {
         });
 
         this.resizeObserver.observe(this.rowContainer!);
+        const intersectionOptions = {
+            root: viewPort,
+            rootMargin: '0px',
+            threshold: 1.0
+        };
+        this.intersectionObserver = new IntersectionObserver(this.handleIntersection, intersectionOptions);
     }
 
     public get data(): unknown[] {
@@ -281,12 +288,13 @@ export class Table extends FoundationElement {
         }));
     };
 
-    // private readonly handleIntersection
+    private readonly handleIntersection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver): void => {
+
+    };
 
     private readonly handleScroll = (event: Event, table: Table): void => {
         const scrollTop = (event.target as HTMLElement).scrollTop;
         this._rowOffset = scrollTop / table._rowHeight;
-        console.log("rowOffset = " + this._rowOffset);
         for (let i = 0; i < table._currentRowElements?.length ?? 0; i++) {
             const rowIndex = Math.trunc(this._rowOffset + i);
             this._currentRowElements[i]!.rowData = table._rows[rowIndex]!;
@@ -295,18 +303,19 @@ export class Table extends FoundationElement {
         }
     };
 
-    private renderVisibleRows(): void {
+    private initializeVisibleRows(): void {
         if (this._viewportRect === undefined) {
             return;
         }
 
         this.clearRowElements();
+        this._rowOffset = 0;
         let totalRenderedHeight = 0;
         let renderedRowIndex = 0;
-        while (totalRenderedHeight < (this._viewportRect!.height + (this._elementBufferSize * this._rowHeight))
+        while (totalRenderedHeight < (this._viewportRect.height + (this._elementBufferSize * this._rowHeight))
                 && this._rowOffset + renderedRowIndex < this._rows.length) {
             const currentRow = this._rows[this._rowOffset + renderedRowIndex]!;
-            const visibleRow =  { row: currentRow.row, parent: this, rowPixelOffset: currentRow.rowPixelOffset, rowSize: 32} as TableRowData;
+            const visibleRow = { row: currentRow.row, parent: this, rowPixelOffset: currentRow.rowPixelOffset, rowSize: 32 } as TableRowData;
             visibleRow.rowPixelOffset = currentRow.rowPixelOffset;
             const rowElement = new TableRow(this, visibleRow);
             this._rowContainerShadow?.appendChild(rowElement);
@@ -329,11 +338,11 @@ export class Table extends FoundationElement {
     /**
      * updates the dimensions of the list
      */
-    private updateDimensions = (): void => {
+    private updateDimensions(): void {
         this.totalListSize = 32 * this._rows.length;
 
-        this.renderVisibleRows();
-    };
+        this.initializeVisibleRows();
+    }
 
     // private updateRow
 }
