@@ -1,13 +1,11 @@
-import { attr, HTMLView, Observable, observable, ViewTemplate, defaultExecutionContext } from '@microsoft/fast-element';
+import { attr, HTMLView, Observable, observable, ViewTemplate, defaultExecutionContext, html } from '@microsoft/fast-element';
 import { DesignSystem, FoundationElement } from '@microsoft/fast-foundation';
-import { dataGridCellTemplate } from './template';
+import { template } from './template';
 import { styles } from './styles';
 
-declare global {
-    interface HTMLElementTagNameMap {
-        'nimble-table-cell': TableCell;
-    }
-}
+const spanTemplate = html<TableCell>`
+    <span>${x => x.cellData}</span>
+`;
 
 /**
  * rdfg
@@ -47,9 +45,7 @@ export class TableCell extends FoundationElement {
     }
 
     public override connectedCallback(): void {
-        if (this._cellData !== undefined) {
-            this.updateCellView();
-        }
+        this.updateCellView();
     }
 
     public override disconnectedCallback(): void {
@@ -57,28 +53,28 @@ export class TableCell extends FoundationElement {
     }
 
     private updateCellView(): void {
-        const alreadyConnected = this.customCellView !== undefined;
-        if (!alreadyConnected) {
-            this.customCellView = this.cellItemTemplate?.create(this);
-            this.customCellView?.bind(this, defaultExecutionContext);
+        // this.disconnectCellView();
+        // this.customCellView = spanTemplate.create(this);
+        const newCellView = this.customCellView === undefined;
+        if (newCellView) {
+            this.customCellView = this.cellItemTemplate!.create(this);
+        } else {
+            this.customCellView?.remove();
         }
-        if (!alreadyConnected) {
-            this.customCellView?.appendTo(this.shadowRoot!);
-        }
+        this.customCellView?.bind(this, defaultExecutionContext);
+
+        this.customCellView!.appendTo(this.shadowRoot!);
     }
 
     private disconnectCellView(): void {
-        if (this.customCellView !== null) {
-            this.customCellView?.dispose();
-            this.customCellView = undefined;
-        }
+        this.customCellView?.dispose();
+        this.customCellView = undefined;
     }
 }
 
 const nimbleTableCell = TableCell.compose({
     baseName: 'table-cell',
-    template: dataGridCellTemplate(),
-    styles
+    template
 });
 
 DesignSystem.getOrCreate().withPrefix('nimble').register(nimbleTableCell());
