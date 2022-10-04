@@ -29,6 +29,7 @@ import './tabs';
 import './tabs-toolbar';
 import './table';
 import './table-cell';
+import './table-row';
 import './text-area';
 import './text-field';
 import './theme-provider';

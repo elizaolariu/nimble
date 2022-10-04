@@ -1,22 +1,23 @@
 import { html, when, repeat, ViewTemplate, ref } from '@microsoft/fast-element';
 import type { FoundationElementTemplate, VirtualList } from '@microsoft/fast-foundation';
 import type { Cell } from '@tanstack/table-core';
-import type { Table, TableHeader, TableRow } from '.';
+import type { Table, TableHeader } from '.';
+import type { TableRow } from '../table-row';
 
-const rowTemplate = html<TableRow, VirtualList>`
-    <div style="
-            transform: ${(_, c) => `translateY(${c.parent.visibleItemSpans[c.index]?.start ?? 0}px)`};
-        "
-        class="table-row">
-        ${repeat(x => x.row.getVisibleCells(), html<Cell<unknown, unknown>>`
-            <nimble-table-cell 
-                :cellItemTemplate=${(_, c) => (c.parent as TableRow)!.parent.getColumnTemplate(c.index)}
-                :cellData=${x => x.getValue()} 
-                >
-            </nimble-table-cell>
-        `, { positioning: true })}
-    </div>
-`;
+// const rowTemplate = html<TableRow>`
+//     <div style="
+//             transform: ${x => `translateY(${x.rowPixelOffset ?? 0}px)`};
+//         "
+//         class="table-row">
+//         ${repeat(x => x.visibleCells, html<Cell<unknown, unknown>>`
+//             <nimble-table-cell 
+//                 :cellItemTemplate=${(_, c) => (c.parent as TableRow)!.parent.getColumnTemplate(c.index)}
+//                 :cellData=${x => x.getValue()} 
+//                 >
+//             </nimble-table-cell>
+//         `, { positioning: true })}
+//     </div>
+// `;
 
 export const template: FoundationElementTemplate<ViewTemplate<Table>> = _ => html<Table>`
 ${when(
@@ -37,16 +38,11 @@ ${when(
                         </nimble-button>
                     `, { positioning: true })}
                 </div>
-                <fast-virtual-list
-                    ${ref('virtualList')}
-                    class="table-body"
-                    orientation="vertical"
-                    auto-update-mode="auto"
-                    item-span="32"
-                    :itemTemplate=${rowTemplate}
-                    :items=${x => x.tableRows}
-                    viewport-buffer="200"
-                ><fast-virtual-list>
+                <div class="table-viewport" ${ref('viewPort')}>
+                    <div class="table-body" ${ref('rowContainer')}
+                        style="height: ${x => x.totalListSize}px">
+                    </div>
+                </div>
             </div>
         </template>
     `

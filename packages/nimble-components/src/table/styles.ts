@@ -5,6 +5,7 @@ export const styles = css`
     display: flex;
     width: 100%;
     height: 600px;
+    overflow-y: scroll;
   }
 
   .table-container {
@@ -22,18 +23,16 @@ export const styles = css`
     flex-direction: row;
   }
 
-  .table-body {
+  .table-viewport {
     overflow-y: scroll;
-    height: 568px;
-    width: 100%;
+    display: block;
+    height: 100%;
   }
 
-  .table-row {
-    height: 32px;
-    display: flex; 
-    flex-direction: row;
-    position: absolute;
-}
+  .table-body {
+    width: 100%;
+    position: relative;
+  }
 
   th span{
     pointer-events: none;

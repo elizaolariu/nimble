@@ -20,7 +20,7 @@ const metadata: Meta<TableArgs> = {
     // prettier-ignore
     render: createUserSelectedThemeStory(html`
         <div style="display: flex; flex-direction: row;">
-            <nimble-table style="max-height: 600px;"
+            <nimble-table style="max-height: 500px;"
                 :data="${x => x.data}"
                 :columns="${x => x.columns}"
             > 
