@@ -1,5 +1,5 @@
-import { observable, Observable, ViewTemplate, css, html, repeat, defaultExecutionContext, HTMLView } from '@microsoft/fast-element';
-import { DataGridCell, DesignSystem, FoundationElement, TabPanel } from '@microsoft/fast-foundation';
+import { Observable, ViewTemplate, css } from '@microsoft/fast-element';
+import { DataGridCell, DesignSystem, FoundationElement } from '@microsoft/fast-foundation';
 import {
     ColumnDef,
     TableState,
@@ -11,9 +11,7 @@ import {
     getSortedRowModel,
     SortingState,
     SortDirection,
-    Column,
-    Row,
-    Cell,
+    Column
 } from '@tanstack/table-core';
 import { VirtualList, virtualListTemplate } from '../virtual-list';
 import { template } from './template';
@@ -26,26 +24,6 @@ declare global {
         'nimble-table': Table;
     }
 }
-
-// const rowTemplate = html<TableRow>`
-//     <div style="
-//             position: absolute;
-//             height: 32px;
-//             display: flex;
-//             flex-direction: row;
-//             transform: ${x => `translateY(${x.rowData.rowPixelOffset ?? 0}px)`};
-//         "
-//         class="table-row">
-//         ${repeat(x => x.visibleCells ?? [], html<Cell<unknown, unknown>>`
-//             <span>${x => x.getValue()}</span>
-//         `, { positioning: true })}
-//     </div>
-// `;
-// <nimble-table-cell
-// :cellItemTemplate=${(_, c) => (c.parent as TableRow)!.parent.getColumnTemplate(c.index)}
-// :cellData=${x => x.getValue()}
-// >
-// </nimble-table-cell>
 
 export interface TableColumn {
     columnDataKey: string;
@@ -88,6 +66,7 @@ export class Table extends FoundationElement {
     /** @internal */
     public readonly rowContainer!: HTMLElement;
     public readonly viewPort!: HTMLElement;
+    public totalListSize = 0;
 
     private readonly table: TanstackTable<unknown>;
     private _data: unknown[] = [];
@@ -103,8 +82,7 @@ export class Table extends FoundationElement {
     private readonly _rowHeight = 32;
     private resizeObserver?: ResizeObserver;
     private _currentRowElements: TableRow[] = [];
-    private _elementBufferSize = 5;
-    public totalListSize = 0;
+    private readonly _elementBufferSize = 5;
 
     // stored geometry for the viewport and internal container elements
     private _viewportRect: DOMRect | undefined;
@@ -135,19 +113,19 @@ export class Table extends FoundationElement {
 
     public override connectedCallback(): void {
         super.connectedCallback();
-        this.viewPort?.addEventListener('scroll', (e) => this.handleScroll(e, this), { passive: true, capture: true });
+        this.viewPort?.addEventListener('scroll', e => this.handleScroll(e, this), { passive: true, capture: true });
         const rowContainer = this.rowContainer;
         const viewPort = this.viewPort;
         this._rowContainerShadow = this.rowContainer.attachShadow({ mode: 'open' });
-        this.resizeObserver = new ResizeObserver((entries) => {
-            if (entries.map(entry => entry.target).includes(rowContainer!)) {
+        this.resizeObserver = new ResizeObserver(entries => {
+            if (entries.map(entry => entry.target).includes(rowContainer)) {
                 this._containerRect = rowContainer.getBoundingClientRect();
                 this._viewportRect = viewPort.getBoundingClientRect();
                 this.updateDimensions();
             }
         });
 
-        this.resizeObserver.observe(this.rowContainer!);
+        this.resizeObserver.observe(this.rowContainer);
     }
 
     public get data(): unknown[] {
@@ -281,17 +259,12 @@ export class Table extends FoundationElement {
         }));
     };
 
-    // private readonly handleIntersection
-
     private readonly handleScroll = (event: Event, table: Table): void => {
         const scrollTop = (event.target as HTMLElement).scrollTop;
         this._rowOffset = scrollTop / table._rowHeight;
-        console.log("rowOffset = " + this._rowOffset);
         for (let i = 0; i < table._currentRowElements?.length ?? 0; i++) {
             const rowIndex = Math.trunc(this._rowOffset + i);
             this._currentRowElements[i]!.rowData = table._rows[rowIndex]!;
-            // table._currentRowElements[i]?.unbind();
-            // table._currentRowElements[i]?.bind(table._rows[Math.trunc(this._rowOffset + i)], defaultExecutionContext);
         }
     };
 
@@ -303,14 +276,14 @@ export class Table extends FoundationElement {
         this.clearRowElements();
         let totalRenderedHeight = 0;
         let renderedRowIndex = 0;
-        while (totalRenderedHeight < (this._viewportRect!.height + (this._elementBufferSize * this._rowHeight))
+        while (totalRenderedHeight < (this._viewportRect.height + (this._elementBufferSize * this._rowHeight))
                 && this._rowOffset + renderedRowIndex < this._rows.length) {
             const currentRow = this._rows[this._rowOffset + renderedRowIndex]!;
-            const visibleRow =  { row: currentRow.row, parent: this, rowPixelOffset: currentRow.rowPixelOffset, rowSize: 32} as TableRowData;
+            const visibleRow = { row: currentRow.row, parent: this, rowPixelOffset: currentRow.rowPixelOffset, rowSize: 32 } as TableRowData;
             visibleRow.rowPixelOffset = currentRow.rowPixelOffset;
             const rowElement = new TableRow(this, visibleRow);
             this._rowContainerShadow?.appendChild(rowElement);
-            renderedRowIndex++;
+            renderedRowIndex += 1;
             totalRenderedHeight += visibleRow.rowSize;
             this._currentRowElements.push(rowElement);
             this._visibleTableRows.push(visibleRow);
@@ -329,13 +302,11 @@ export class Table extends FoundationElement {
     /**
      * updates the dimensions of the list
      */
-    private updateDimensions = (): void => {
+    private readonly updateDimensions = (): void => {
         this.totalListSize = 32 * this._rows.length;
 
         this.renderVisibleRows();
     };
-
-    // private updateRow
 }
 
 const nimbleTable = Table.compose({

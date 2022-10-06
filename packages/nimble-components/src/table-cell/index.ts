@@ -54,20 +54,19 @@ export class TableCell extends FoundationElement {
 
     private updateCellView(): void {
         // this.disconnectCellView();
-        // this.customCellView = spanTemplate.create(this);
         const newCellView = this.customCellView === undefined;
         if (newCellView) {
             this.customCellView = this.cellItemTemplate!.create(this);
-        } else {
-            this.customCellView?.remove();
+            this.customCellView?.bind(this, defaultExecutionContext);
         }
-        this.customCellView?.bind(this, defaultExecutionContext);
 
-        this.customCellView!.appendTo(this.shadowRoot!);
+        if (newCellView) {
+            this.customCellView!.appendTo(this.shadowRoot!);
+        }
     }
 
     private disconnectCellView(): void {
-        this.customCellView?.dispose();
+        this.customCellView?.remove();
         this.customCellView = undefined;
     }
 }
