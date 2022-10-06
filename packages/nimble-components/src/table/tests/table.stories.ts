@@ -3,7 +3,7 @@ import '../../all-components';
 import { html } from '@microsoft/fast-element';
 import { createUserSelectedThemeStory } from '../../utilities/tests/storybook';
 import { getColumns, makeData } from './makedata';
-import type { TableColumn } from '../index';
+import type { TableColumn } from '..';
 
 interface TableArgs {
     data: unknown[];
@@ -28,7 +28,7 @@ const metadata: Meta<TableArgs> = {
         </div>
     `),
     args: {
-        data: makeData(50),
+        data: makeData(4000),
         columns: getColumns()
     }
 };
