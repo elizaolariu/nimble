@@ -3,10 +3,12 @@ import { DesignSystem, FoundationElement } from '@microsoft/fast-foundation';
 import type { Cell, Row } from '@tanstack/table-core';
 import type { Table } from '../table';
 import { TableCell } from '../table-cell';
+import { styles } from './styles';
 import { template } from './template';
 
 export interface TableRowData {
     row: Row<unknown>;
+    dataIndex: number;
     parent: Table;
     rowSize: number;
     rowPixelOffset?: number;
@@ -28,6 +30,7 @@ export class TableRow extends FoundationElement {
     public set rowData(value: TableRowData) {
         this._rowData = value;
         this.visibleCells = this._rowData.row.getVisibleCells();
+        this.style.transform = `translateY(${(this._rowData.rowPixelOffset ?? 0).toString()}px)`;
         Observable.notify(this, 'rowData');
         this.renderCells();
     }
@@ -84,7 +87,8 @@ export class TableRow extends FoundationElement {
 
 const nimbleTableRow = TableRow.compose({
     baseName: 'table-row',
-    template
+    template,
+    styles
 });
 
 DesignSystem.getOrCreate().withPrefix('nimble').register(nimbleTableRow());

@@ -7,14 +7,7 @@ ${when(
         x => x.ready,
         html<TableRow>`
     <template>
-        <div style="
-                position: absolute;
-                height: 32px;
-                display: flex; 
-                flex-direction: row;
-                transform: ${x => `translateY(${x.rowData.rowPixelOffset ?? 0}px)`};
-            "
-            ${ref('rowContainer')}
+        <div ${ref('rowContainer')}
             class="table-row">
         </div>
     </template>

@@ -28,7 +28,7 @@ const metadata: Meta<TableArgs> = {
         </div>
     `),
     args: {
-        data: makeData(50),
+        data: makeData(3000),
         columns: getColumns()
     }
 };

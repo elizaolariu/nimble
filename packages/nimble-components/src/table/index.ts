@@ -1,4 +1,4 @@
-import { observable, Observable, ViewTemplate, css, html, repeat, defaultExecutionContext, HTMLView } from '@microsoft/fast-element';
+import { observable, Observable, ViewTemplate, css, html, repeat, defaultExecutionContext, HTMLView, DOM } from '@microsoft/fast-element';
 import { DataGridCell, DesignSystem, FoundationElement, TabPanel } from '@microsoft/fast-foundation';
 import {
     ColumnDef,
@@ -20,6 +20,7 @@ import { template } from './template';
 import { styles } from './styles';
 import type { TableCell } from '../table-cell';
 import { TableRow, TableRowData } from '../table-row';
+import { IntersectionService } from '../utilities/intersection-service';
 
 declare global {
     interface HTMLElementTagNameMap {
@@ -28,14 +29,14 @@ declare global {
 }
 
 // const rowTemplate = html<TableRow>`
-//     <div style="
+//     <div style='
 //             position: absolute;
 //             height: 32px;
 //             display: flex;
 //             flex-direction: row;
 //             transform: ${x => `translateY(${x.rowData.rowPixelOffset ?? 0}px)`};
-//         "
-//         class="table-row">
+//         '
+//         class='table-row'>
 //         ${repeat(x => x.visibleCells ?? [], html<Cell<unknown, unknown>>`
 //             <span>${x => x.getValue()}</span>
 //         `, { positioning: true })}
@@ -88,6 +89,7 @@ export class Table extends FoundationElement {
     /** @internal */
     public readonly rowContainer!: HTMLElement;
     public readonly viewPort!: HTMLElement;
+    public totalListSize = 0;
 
     private readonly table: TanstackTable<unknown>;
     private _data: unknown[] = [];
@@ -103,9 +105,12 @@ export class Table extends FoundationElement {
     private readonly _rowHeight = 32;
     private resizeObserver?: ResizeObserver;
     private intersectionObserver?: IntersectionObserver;
+    private readonly intersectionService: IntersectionService = new IntersectionService();
     private _currentRowElements: TableRow[] = [];
-    private _elementBufferSize = 5;
-    public totalListSize = 0;
+    private readonly _elementBufferSize = 5;
+    private _pendingPositioningUpdate = false;
+    private _isBusy = false;
+    private _finalUpdateNeeded = false;
 
     // stored geometry for the viewport and internal container elements
     private _viewportRect: DOMRect | undefined;
@@ -136,19 +141,19 @@ export class Table extends FoundationElement {
 
     public override connectedCallback(): void {
         super.connectedCallback();
-        this.viewPort?.addEventListener('scroll', (e) => this.handleScroll(e, this), { passive: true, capture: true });
+        this.viewPort?.addEventListener('scroll', e => this.handleScroll(e, this), { passive: true, capture: true });
         const rowContainer = this.rowContainer;
         const viewPort = this.viewPort;
         this._rowContainerShadow = this.rowContainer.attachShadow({ mode: 'open' });
-        this.resizeObserver = new ResizeObserver((entries) => {
-            if (entries.map(entry => entry.target).includes(rowContainer!)) {
+        this.resizeObserver = new ResizeObserver(entries => {
+            if (entries.map(entry => entry.target).includes(rowContainer)) {
                 this._containerRect = rowContainer.getBoundingClientRect();
                 this._viewportRect = viewPort.getBoundingClientRect();
                 this.updateDimensions();
             }
         });
 
-        this.resizeObserver.observe(this.rowContainer!);
+        this.resizeObserver.observe(this.rowContainer);
         const intersectionOptions = {
             root: viewPort,
             rootMargin: '0px',
@@ -257,11 +262,12 @@ export class Table extends FoundationElement {
     private refreshRows(): void {
         const rows = this.table.getRowModel().rows;
         let currentRowOffset = 0;
-        this.tableRows = rows.map(row => {
-            const tableRow = { row, parent: this, rowPixelOffset: currentRowOffset, rowSize: 32 } as TableRowData;
+        this.tableRows = rows.map((row, i) => {
+            const tableRow = { row, parent: this, rowPixelOffset: currentRowOffset, rowSize: 32, dataIndex: i } as TableRowData;
             currentRowOffset += this._rowHeight;
             return tableRow;
         });
+        this.initializeVisibleRows();
     }
 
     private refreshHeaders(): void {
@@ -288,19 +294,60 @@ export class Table extends FoundationElement {
         }));
     };
 
-    private readonly handleIntersection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver): void => {
+    private requestPositionUpdates(): void {
+        if (this._pendingPositioningUpdate) {
+            this._finalUpdateNeeded = true;
+            return;
+        }
+        this._finalUpdateNeeded = false;
+        this._pendingPositioningUpdate = true;
 
+        this.intersectionService.requestPosition(
+            this.rowContainer,
+            this.handleIntersection
+        );
+        this.intersectionService.requestPosition(
+            this.viewPort,
+            this.handleIntersection
+        );
+    }
+
+    private readonly handleIntersection = (entries: IntersectionObserverEntry[]): void => {
+        if (!this._pendingPositioningUpdate) {
+            this._isBusy = false;
+            return;
+        }
+
+        this._pendingPositioningUpdate = false;
+
+        if (this._finalUpdateNeeded) {
+            this.requestPositionUpdates();
+        } else {
+            this._isBusy = false;
+        }
+
+        const containerEntry = entries.find(x => x.target === this.rowContainer);
+        const viewportEntry = entries.find(x => x.target === this.viewPort);
+
+        if (!containerEntry || !viewportEntry) {
+            return;
+        }
+
+        this._viewportRect = this.viewPort !== document.documentElement
+            ? viewportEntry.boundingClientRect
+            : new DOMRectReadOnly(
+                viewportEntry.boundingClientRect.x + document.documentElement.scrollLeft,
+                viewportEntry.boundingClientRect.y + document.documentElement.scrollTop,
+                viewportEntry.boundingClientRect.width,
+                viewportEntry.boundingClientRect.height
+            );
+        this._containerRect = containerEntry.boundingClientRect;
+
+        this.updateVisibleItems();
     };
 
-    private readonly handleScroll = (event: Event, table: Table): void => {
-        const scrollTop = (event.target as HTMLElement).scrollTop;
-        this._rowOffset = scrollTop / table._rowHeight;
-        for (let i = 0; i < table._currentRowElements?.length ?? 0; i++) {
-            const rowIndex = Math.trunc(this._rowOffset + i);
-            this._currentRowElements[i]!.rowData = table._rows[rowIndex]!;
-            // table._currentRowElements[i]?.unbind();
-            // table._currentRowElements[i]?.bind(table._rows[Math.trunc(this._rowOffset + i)], defaultExecutionContext);
-        }
+    private readonly handleScroll = (_: Event, table: Table): void => {
+        table.requestPositionUpdates();
     };
 
     private initializeVisibleRows(): void {
@@ -315,11 +362,11 @@ export class Table extends FoundationElement {
         while (totalRenderedHeight < (this._viewportRect.height + (this._elementBufferSize * this._rowHeight))
                 && this._rowOffset + renderedRowIndex < this._rows.length) {
             const currentRow = this._rows[this._rowOffset + renderedRowIndex]!;
-            const visibleRow = { row: currentRow.row, parent: this, rowPixelOffset: currentRow.rowPixelOffset, rowSize: 32 } as TableRowData;
+            const visibleRow = { row: currentRow.row, parent: this, rowPixelOffset: currentRow.rowPixelOffset, rowSize: 32, dataIndex: currentRow.dataIndex } as TableRowData;
             visibleRow.rowPixelOffset = currentRow.rowPixelOffset;
             const rowElement = new TableRow(this, visibleRow);
             this._rowContainerShadow?.appendChild(rowElement);
-            renderedRowIndex++;
+            renderedRowIndex += 1;
             totalRenderedHeight += visibleRow.rowSize;
             this._currentRowElements.push(rowElement);
             this._visibleTableRows.push(visibleRow);
@@ -344,7 +391,60 @@ export class Table extends FoundationElement {
         this.initializeVisibleRows();
     }
 
-    // private updateRow
+    private updateVisibleItems(): void {
+        const topVisibleRow = this._currentRowElements[0];
+        const topRowBounds = topVisibleRow!.getBoundingClientRect();
+        const bottomVisibleRow = this._currentRowElements[this._currentRowElements.length - 1];
+        const bottomRowBounds = bottomVisibleRow!.getBoundingClientRect();
+        let elementCountAbove = Math.trunc((this._viewportRect!.top - topRowBounds.top) / 32);
+        let elementCountBelow = Math.trunc((bottomRowBounds.bottom - this._viewportRect!.bottom) / 32);
+
+        let nextRowAboveIndex = topVisibleRow!.rowData.dataIndex - 1;
+        while (elementCountAbove < 10) {
+            if (elementCountBelow > 10 && nextRowAboveIndex >= 0) {
+                const rowsToMove = this._currentRowElements.splice(0, elementCountBelow - 10);
+                rowsToMove.forEach(rowToMove => {
+                    // rowToMove.remove();
+                    rowToMove.rowData = { row: this._rows[nextRowAboveIndex]?.row, parent: this, rowPixelOffset: this._rows[nextRowAboveIndex]?.rowPixelOffset, rowSize: 32, dataIndex: nextRowAboveIndex } as TableRowData;
+                    // this._rowContainerShadow?.appendChild(rowToMove);
+                    nextRowAboveIndex -= 1;
+                    elementCountBelow -= 1;
+                    this._currentRowElements.splice(0, 0, rowToMove);
+                    elementCountAbove += 1;
+                });
+            } else {
+                const rowData = { row: this._rows[nextRowAboveIndex]?.row, parent: this, rowPixelOffset: this._rows[nextRowAboveIndex]?.rowPixelOffset, rowSize: 32, dataIndex: nextRowAboveIndex } as TableRowData;
+                const rowElement = new TableRow(this, rowData);
+                this._rowContainerShadow?.appendChild(rowElement);
+                nextRowAboveIndex -= 1;
+                this._currentRowElements.splice(0, 0, rowElement);
+                elementCountAbove += 1;
+            }
+        }
+
+        let nextRowBelowIndex = bottomVisibleRow!.rowData.dataIndex + 1;
+        while (elementCountBelow < 10) {
+            if (elementCountAbove > 10 && nextRowBelowIndex < this._rows.length) {
+                const rowsToMove = this._currentRowElements.splice(0, elementCountAbove - 10);
+                rowsToMove.forEach(rowToMove => {
+                    // rowToMove.remove();
+                    rowToMove.rowData = { row: this._rows[nextRowBelowIndex]?.row, parent: this, rowPixelOffset: this._rows[nextRowBelowIndex]?.rowPixelOffset, rowSize: 32, dataIndex: nextRowBelowIndex } as TableRowData;
+                    // this._rowContainerShadow?.appendChild(rowToMove);
+                    nextRowBelowIndex += 1;
+                    elementCountAbove -= 1;
+                    this._currentRowElements.push(rowToMove);
+                    elementCountBelow += 1;
+                });
+            } else {
+                const rowData = { row: this._rows[nextRowBelowIndex]?.row, parent: this, rowPixelOffset: this._rows[nextRowBelowIndex]?.rowPixelOffset, rowSize: 32, dataIndex: nextRowBelowIndex } as TableRowData;
+                const rowElement = new TableRow(this, rowData);
+                this._rowContainerShadow?.appendChild(rowElement);
+                nextRowBelowIndex += 1;
+                this._currentRowElements.push(rowElement);
+                elementCountBelow += 1;
+            }
+        }
+    }
 }
 
 const nimbleTable = Table.compose({
