@@ -12,11 +12,6 @@ interface TableArgs {
 
 const metadata: Meta<TableArgs> = {
     title: 'Table',
-    parameters: {
-        actions: {
-            handles: ['change', 'input']
-        }
-    },
     // prettier-ignore
     render: createUserSelectedThemeStory(html`
         <div style="display: flex; flex-direction: row;">

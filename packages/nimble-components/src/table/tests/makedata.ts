@@ -90,23 +90,19 @@ export function getColumns(): TableColumn[] {
         columnDataKey: 'status',
         title: 'Status',
         cellTemplate: html<TableCell, TableCell>`
-        <nimble-text-field appearance="frameless" readonly="true" value=${x => x.cellData}>
-        </nimble-text-field>
-        <!-- <nimble-select value=${x => x.cellData}>
+        <nimble-select value=${x => x.cellData}>
             <nimble-list-option value="relationship">In Relationship</nimble-list-option>
             <nimble-list-option value="single">Single</nimble-list-option>
             <nimble-list-option value="complicated">Complicated</nimble-list-option>
-        <nimble-select> -->
+        <nimble-select>
     `,
     },
     {
         columnDataKey: 'progress',
         title: 'Progress',
         cellTemplate: html<TableCell, TableCell>`
-        <nimble-text-field appearance="frameless" readonly="true" value=${x => x.cellData}>
-        </nimble-text-field>
-        <!-- <nimble-number-field value=${x => x.cellData}>
-        </nimble-number-field> -->
+        <nimble-number-field value=${x => x.cellData}>
+        </nimble-number-field>
         `,
     }
     ];
