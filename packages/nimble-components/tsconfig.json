@@ -5,6 +5,7 @@
         "moduleResolution": "node",
         "outDir": "dist/esm",
         "strict": true,
+        "skipLibCheck": true,
         "experimentalDecorators": true,
         "target": "ES2020",
         "module": "ES2020",
@@ -14,7 +15,7 @@
         "sourceMap": true,
         "lib": ["DOM", "ES2015", "ES2016.Array.Include", "ES2017.Object"],
         // Whitelist imported @types instead of using them all
-        "types": ["jasmine", "webpack-env"],
+        "types": ["jasmine", "webpack-env", "@testing-library/jasmine-dom"],
         // Require type only imports where possible
         // so imports with side-effects are explicit
         "importsNotUsedAsValues": "error",
