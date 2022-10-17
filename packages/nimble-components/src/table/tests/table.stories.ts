@@ -3,7 +3,7 @@ import { withXD } from 'storybook-addon-xd-designs';
 import '../../all-components';
 import { html } from '@microsoft/fast-element';
 import { createUserSelectedThemeStory } from '../../utilities/tests/storybook';
-import { getColumns, makeData } from './makedata';
+import { getColumns } from './makedata';
 import type { TableColumn } from '../index';
 
 interface TableArgs {
@@ -21,13 +21,11 @@ const metadata: Meta<TableArgs> = {
     // prettier-ignore
     render: createUserSelectedThemeStory(html`
         <nimble-table style="max-height: 500px"
-            :data="${x => x.data}"
             :columns="${x => x.columns}"
         >
         </nimble-table>
     `),
     args: {
-        data: makeData(2000),
         columns: getColumns()
     }
 };

@@ -19,6 +19,8 @@ import { template } from './template';
 import { styles } from './styles';
 import type { TableCell } from '../table-cell';
 import type { TableRowData } from '../table-row';
+import { InfiniteQueryObserver, QueryClient, QueryObserverResult } from '@tanstack/query-core';
+import { makeData, Person } from './tests/makedata';
 
 declare global {
     interface HTMLElementTagNameMap {
@@ -61,6 +63,14 @@ interface ObjectInterface {
     [key: string]: unknown;
 }
 
+async function makeDataAsync(count: number): Promise<Person[]> {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(makeData(count));
+        }, 500);
+    });
+}
+
 /**
  * Table
  */
@@ -86,6 +96,7 @@ export class Table extends FoundationElement {
     private _ready = false;
     private readonly resizeObserver: ResizeObserver;
     // private readonly viewportMutationObserver: MutationObserver;
+    private readonly _infiniteQueryObserver: InfiniteQueryObserver<Person[], unknown, unknown, Person[], string[]>;
 
     public constructor() {
         super();
@@ -117,6 +128,15 @@ export class Table extends FoundationElement {
             }
         });
 
+        const client = new QueryClient();
+
+        this._infiniteQueryObserver = new InfiniteQueryObserver(client, {
+            queryKey: ['people'],
+            queryFn: async () => makeDataAsync(20),
+            getNextPageParam: (_lastPage, _allPages) => 0,
+            getPreviousPageParam: (_firstPage, _allPages) => 0,
+        });
+
         // this.viewportMutationObserver = new MutationObserver((mutations: MutationRecord[], _: MutationObserver) => {
         //     const mutatedElements = mutations.map(mutation => mutation.target);
         //     if (mutatedElements.includes(this.viewport)) {
@@ -131,6 +151,14 @@ export class Table extends FoundationElement {
         this.viewport?.addEventListener('scroll', e => this.handleScroll(e, this), { passive: true, capture: true });
         this.resizeObserver.observe(this.viewport);
         // this.viewportMutationObserver.observe()
+
+        this._infiniteQueryObserver.subscribe((result: QueryObserverResult) => {
+            console.log('observer update');
+            console.log(result);
+            if (result.isSuccess) {
+                this.data = (result.data.pages).flat();
+            }
+        });
     }
 
     public get data(): unknown[] {
@@ -142,6 +170,15 @@ export class Table extends FoundationElement {
         this._data = value;
         Observable.notify(this, 'data');
         this._options = { ...this._options, data: this.data };
+        this.update({ ...this.table.initialState });
+        if (this.virtualizer) {
+            this.virtualizer.options = { ...this.virtualizer.options, count: this.data.length };
+            this.virtualizer.calculateRange();
+            this.virtualizer._willUpdate();
+            this.visibleItems = this.virtualizer.getVirtualItems();
+            this.rowContainerHeight = this.virtualizer.getTotalSize();
+        }
+        this.refreshRows();
     }
 
     public get columns(): TableColumn[] {
@@ -294,8 +331,12 @@ export class Table extends FoundationElement {
     };
 
     private readonly handleScroll = (event: Event, table: Table): void => {
-        // this.virtualizer?._willUpdate();
-        // this.visibleItems = this.virtualizer?.getVirtualItems() ?? [];
+        const element = (event.target as Element);
+        if (element.scrollTop + element.clientHeight + 10 >= element.scrollHeight) {
+            void this._infiniteQueryObserver.fetchNextPage();
+        }
+        //this.virtualizer?._willUpdate();
+        this.visibleItems = this.virtualizer?.getVirtualItems() ?? [];
     };
 }
 
