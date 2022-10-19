@@ -1,4 +1,4 @@
-import { DOM, html } from '@microsoft/fast-element';
+import { html } from '@microsoft/fast-element';
 import { fixture, Fixture } from '../../utilities/tests/fixture';
 import type { Combobox } from '..';
 import '../../list-option';
@@ -22,7 +22,7 @@ async function setup(
     return fixture<Combobox>(viewTemplate);
 }
 
-fdescribe('NimbleComboboxPageObject', () => {
+describe('NimbleComboboxPageObject', () => {
     it('can be created from a Combobox not in the page', async () => {
         const { element } = await setup();
         const pageObject = new NimbleComboboxPageObject(element);
