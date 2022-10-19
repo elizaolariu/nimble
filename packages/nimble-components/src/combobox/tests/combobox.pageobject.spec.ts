@@ -40,35 +40,80 @@ fdescribe('NimbleComboboxPageObject', () => {
         await disconnect();
     });
 
-    xit('should respect "open" and "position" attributes when both set', async () => {
-        const position = 'above';
-        const { element, connect, disconnect } = await setup(position, true);
-
+    it('setText() to valid item results in value updating', async () => {
+        const { element, connect, disconnect } = await setup();
         await connect();
-        await DOM.nextUpdate();
+        const pageObject = new NimbleComboboxPageObject(element);
 
-        expect(element.getAttribute('open')).not.toBeNull();
-        expect(element.getAttribute('position')).toBe(position);
+        await pageObject.setText('two');
+
+        expect(element.value).toBe('Two');
 
         await disconnect();
     });
 
-    xit('should keep selected value when options change', async () => {
+    it('setText() to invalid item results in value updating', async () => {
         const { element, connect, disconnect } = await setup();
         await connect();
-        element.value = 'two';
-        await DOM.nextUpdate();
+        const pageObject = new NimbleComboboxPageObject(element);
+
+        await pageObject.setText('none of the items match this string');
+
+        expect(element.value).toBe('none of the items match this string');
+
+        await disconnect();
+    });
+
+    it('clickInput() sets the focus to the combobox element', async () => {
+        const { element, connect, disconnect } = await setup();
+        await connect();
+        const pageObject = new NimbleComboboxPageObject(element);
+
+        expect(document.activeElement).not.toBe(element);
+
+        await pageObject.clickInput();
+
+        expect(document.activeElement).toBe(element);
+
+        await disconnect();
+    });
+
+    it('selectText() sets selection', async () => {
+        const { element, connect, disconnect } = await setup();
+        await connect();
+        const pageObject = new NimbleComboboxPageObject(element);
+
+        await pageObject.setText('Two');
+        await pageObject.selectText();
+
+        expect(document.activeElement).toBe(element);
+        expect(document.getSelection()?.toString()).toBe('Two');
+
+        await disconnect();
+    });
+
+    it('pressKeys() with simple string sets value', async () => {
+        const { element, connect, disconnect } = await setup();
+        await connect();
+        const pageObject = new NimbleComboboxPageObject(element);
+
+        await pageObject.clickInput();
+        await pageObject.pressKeys('two');
+
         expect(element.value).toBe('Two');
 
-        // Add option zero at the top of the options list
-        // prettier-ignore
-        element.insertAdjacentHTML(
-            'afterbegin',
-            '<nimble-list-option value="zero">Zero</nimble-list-option>'
-        );
-        await DOM.nextUpdate();
+        await disconnect();
+    });
 
-        expect(element.value).toBe('Two');
+    it('pressKeys() with control keys sets value', async () => {
+        const { element, connect, disconnect } = await setup();
+        await connect();
+        const pageObject = new NimbleComboboxPageObject(element);
+
+        await pageObject.clickInput();
+        await pageObject.pressKeys('{x}{y}{Delete}');
+
+        expect(element.value).toBe('xy');
 
         await disconnect();
     });
