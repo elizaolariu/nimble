@@ -1,12 +1,12 @@
 import userEvent from '@testing-library/user-event';
 import type { UserEvent } from '@testing-library/user-event/dist/types/setup/setup';
-import type { Combobox } from '..';
-import { processUpdates } from '../../testing/async-helpers';
+import type { Combobox } from '.';
+import { processUpdates } from '../testing/async-helpers';
 
 /**
- * PageObject for the Nimble Combobox.
+ * Page object for the Nimble Combobox.
  */
-export class NimbleComboboxPageObject {
+export class PageObject {
     private readonly user: UserEvent;
     public constructor(private readonly combobox: Combobox) {
         this.user = userEvent.setup();

@@ -2,7 +2,7 @@ import { html } from '@microsoft/fast-element';
 import { fixture, Fixture } from '../../utilities/tests/fixture';
 import type { Combobox } from '..';
 import '../../list-option';
-import { NimbleComboboxPageObject } from './combobox.pageobject';
+import { PageObject } from '../page-object';
 
 async function setup(
     position?: string,
@@ -25,7 +25,7 @@ async function setup(
 describe('NimbleComboboxPageObject', () => {
     it('can be created from a Combobox not in the page', async () => {
         const { element } = await setup();
-        const pageObject = new NimbleComboboxPageObject(element);
+        const pageObject = new PageObject(element);
 
         expect(pageObject).toBeTruthy();
     });
@@ -33,7 +33,7 @@ describe('NimbleComboboxPageObject', () => {
     it('can be created from a Combobox in the page', async () => {
         const { element, connect, disconnect } = await setup();
         await connect();
-        const pageObject = new NimbleComboboxPageObject(element);
+        const pageObject = new PageObject(element);
 
         expect(pageObject).toBeTruthy();
 
@@ -43,7 +43,7 @@ describe('NimbleComboboxPageObject', () => {
     it('setText() to valid item results in value updating', async () => {
         const { element, connect, disconnect } = await setup();
         await connect();
-        const pageObject = new NimbleComboboxPageObject(element);
+        const pageObject = new PageObject(element);
 
         await pageObject.setText('two');
 
@@ -55,7 +55,7 @@ describe('NimbleComboboxPageObject', () => {
     it('setText() to invalid item results in value updating', async () => {
         const { element, connect, disconnect } = await setup();
         await connect();
-        const pageObject = new NimbleComboboxPageObject(element);
+        const pageObject = new PageObject(element);
 
         await pageObject.setText('none of the items match this string');
 
@@ -67,7 +67,7 @@ describe('NimbleComboboxPageObject', () => {
     it('clickInput() sets the focus to the combobox element', async () => {
         const { element, connect, disconnect } = await setup();
         await connect();
-        const pageObject = new NimbleComboboxPageObject(element);
+        const pageObject = new PageObject(element);
 
         expect(document.activeElement).not.toBe(element);
 
@@ -81,7 +81,7 @@ describe('NimbleComboboxPageObject', () => {
     it('selectText() sets selection', async () => {
         const { element, connect, disconnect } = await setup();
         await connect();
-        const pageObject = new NimbleComboboxPageObject(element);
+        const pageObject = new PageObject(element);
 
         await pageObject.setText('Two');
         await pageObject.selectText();
@@ -95,7 +95,7 @@ describe('NimbleComboboxPageObject', () => {
     it('pressKeys() with simple string sets value', async () => {
         const { element, connect, disconnect } = await setup();
         await connect();
-        const pageObject = new NimbleComboboxPageObject(element);
+        const pageObject = new PageObject(element);
 
         await pageObject.clickInput();
         await pageObject.pressKeys('two');
@@ -108,7 +108,7 @@ describe('NimbleComboboxPageObject', () => {
     it('pressKeys() with control keys sets value', async () => {
         const { element, connect, disconnect } = await setup();
         await connect();
-        const pageObject = new NimbleComboboxPageObject(element);
+        const pageObject = new PageObject(element);
 
         await pageObject.clickInput();
         await pageObject.pressKeys('{x}{y}{Delete}');
