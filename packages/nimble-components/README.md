@@ -100,6 +100,10 @@ The goal of the Nimble design system is to provide a consistent style for applic
 
 For accessibility information related to nimble components, see [ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
 
+## Testing
+
+Nimble provides a page object for each component that offers a high-level API to interact with the component from test code.
+
 ## Contributing
 
 Follow the instructions in [CONTRIBUTING.md](/packages/nimble-components/CONTRIBUTING.md) to modify this library.
