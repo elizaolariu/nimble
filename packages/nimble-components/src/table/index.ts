@@ -16,13 +16,13 @@ import {
     GroupingState,
     Column,
     Row,
+    ExpandedState
 } from '@tanstack/table-core';
-import { Virtualizer, VirtualizerOptions, elementScroll, observeElementOffset, observeElementRect, windowScroll, VirtualItem } from '@tanstack/virtual-core';
+import { Virtualizer, VirtualizerOptions, elementScroll, observeElementOffset, observeElementRect, VirtualItem } from '@tanstack/virtual-core';
 import { template } from './template';
 import { styles } from './styles';
 import type { TableCell } from '../table-cell';
 import type { TableRowData } from '../table-row';
-import type { ExpandedState } from '../utilities/tests/states';
 
 declare global {
     interface HTMLElementTagNameMap {
@@ -85,7 +85,7 @@ export class Table extends FoundationElement {
     private _options: TableOptionsResolved<unknown>;
     private _sorting: SortingState = [];
     private _grouping: GroupingState = [];
-    private _expanded: ExpandedState = [];
+    private _expanded: ExpandedState = {};
     private _tanstackcolumns: ColumnDef<unknown>[] = [];
     private _visibleItems: VirtualItem<unknown>[] = [];
     private _rowContainerHeight = 0;
@@ -98,7 +98,7 @@ export class Table extends FoundationElement {
         const tanstackColumns = this._tanstackcolumns;
         const sorting = this._sorting;
         const grouping = this._grouping;
-        const expanded = this._expanded
+        const expanded = this._expanded;
         this._options = {
             get data(): unknown[] {
                 return data ?? [];

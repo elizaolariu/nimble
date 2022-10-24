@@ -74,23 +74,23 @@ export const template: FoundationElementTemplate<ViewTemplate<Table>> = context 
         <div class="table-viewport" ${ref('viewport')}>
             <div class="table-body" ${ref('rowContainer')} style="height: ${x => x.rowContainerHeight}px">
                 ${repeat(x => x.visibleItems, html<VirtualItem<TableRow>>`
-                    ${when((x, c) => (c.parent as Table).tableData[x.index].row.getIsGrouped(), html`
+                    ${when((x, c) => (c.parent as Table).tableData[x.index]!.row.getIsGrouped(), html`
                         <span class="group-row-content"
                             style="
                                 height: ${x => x.size}px;
                                 position: absolute;
-                                width: calc(100% - ${(x, c) => 16 * (c.parent as Table).tableData[x.index].row.depth}px);
+                                width: calc(100% - ${(x, c) => 16 * (c.parent as Table).tableData[x.index]!.row.depth}px);
                                 transform: translateY(${x => x.start}px);
-                                padding-left: ${(x, c) => 16 * (c.parent as Table).tableData[x.index].row.depth}px;
+                                padding-left: ${(x, c) => 16 * (c.parent as Table).tableData[x.index]!.row.depth}px;
                                 ">
                             <nimble-button
                                 appearance="ghost"
                                 content-hidden
-                                @click=${(x, c) => (c.parent as Table).tableData[x.index].row.toggleExpanded()}>
-                                ${when((x, c) => (c.parent as Table).tableData[x.index].row.getIsExpanded(), html`
+                                @click=${(x, c) => (c.parent as Table).tableData[x.index]!.row.toggleExpanded()}>
+                                ${when((x, c) => (c.parent as Table).tableData[x.index]!.row.getIsExpanded(), html`
                                     <nimble-icon-arrow-expander-down slot="start"></nimble-icon-arrow-expander-down>
                                 `)}
-                                ${when((x, c) => !(c.parent as Table).tableData[x.index].row.getIsExpanded(), html`
+                                ${when((x, c) => !(c.parent as Table).tableData[x.index]!.row.getIsExpanded(), html`
                                     <nimble-icon-arrow-expander-right slot="start"></nimble-icon-arrow-expander-right>
                                 `)}
                                 Expand/Collapse
