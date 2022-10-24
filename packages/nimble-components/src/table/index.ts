@@ -139,6 +139,7 @@ export class Table extends FoundationElement {
             return;
         }
         this.virtualizer.options.count = this.table.getRowModel().rows.length;
+        this.visibleItems = this.virtualizer.getVirtualItems();
         this.rowContainerHeight = this.virtualizer.getTotalSize();
     }
 
