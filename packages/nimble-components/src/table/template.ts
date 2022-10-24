@@ -96,10 +96,10 @@ export const template: FoundationElementTemplate<ViewTemplate<Table>> = context 
                                 Expand/Collapse
                             </nimble-button>
                             <!-- TODO: 'subrows' doesn't correctly account for sub groups. -->
-                            ${(x, c) => (c.parent as Table).tableData[x.index].row.groupingValue} (${(x, c) => (c.parent as Table).tableData[x.index].row.subRows.length})
+                            ${(x, c) => (c.parent as Table).tableData[x.index]!.row.groupingValue} (${(x, c) => (c.parent as Table).tableData[x.index]!.row.subRows.length})
                         </span>
                     `)}
-                    ${when((x, c) => !(c.parent as Table).tableData[x.index].row.getIsGrouped(), html`
+                    ${when((x, c) => !(c.parent as Table).tableData[x.index]!.row.getIsGrouped(), html`
                         <${context.tagFor(TableRow)}
                             :rowData="${(x, c) => (c.parent as Table).tableData[x.index]}"
                             style="
