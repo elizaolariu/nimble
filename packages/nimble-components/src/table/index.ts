@@ -236,14 +236,23 @@ export class Table extends FoundationElement {
     }
 
     private initializeColumns(): void {
-        this.columns = [];
-        const columns: TableColumn[] = [];
-        for (const columnProvider of this.slottedColumns) {
-            const tableColumn = { columnDataKey: columnProvider.columnId, cellTemplate: columnProvider.getColumnTemplate() } as TableColumn;
-            columns.push(tableColumn);
-        }
+        if (this.slottedColumns.length > 0) {
+            const columns: TableColumn[] = [];
+            for (const columnProvider of this.slottedColumns) {
+                if (this.isColumnProvider(columnProvider)) {
+                    const tableColumn = { columnDataKey: columnProvider.columnId, cellTemplate: columnProvider.getColumnTemplate() } as TableColumn;
+                    columns.push(tableColumn);
+                }
+            }
 
-        this.columns = columns;
+            if (columns.length > 0) {
+                this.columns = columns;
+            }
+        }
+    }
+
+    private isColumnProvider(object: unknown): boolean {
+        return 'columnId' in (object as ObjectInterface) && 'getColumnTemplate' in (object as ObjectInterface);
     }
 
     private readonly setSorting = (updater: unknown): void => {

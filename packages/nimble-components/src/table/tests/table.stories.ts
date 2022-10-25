@@ -17,8 +17,13 @@ const metadata: Meta<TableArgs> = {
     render: createUserSelectedThemeStory(html`
         <nimble-table style="max-height: 500px"
             :data="${x => x.data}"
-            :columns="${x => x.columns}"
         >
+            <nimble-text-field-column columnId="firstName"></nimble-text-field-column>
+            <nimble-text-field-column columnId="lastName"></nimble-text-field-column>
+            <nimble-number-field-column columnId="age" step="1"></nimble-number-field-column>
+            <nimble-text-field-column columnId="visits"></nimble-text-field-column>
+            <nimble-text-field-column columnId="status"></nimble-text-field-column>
+            <nimble-number-field-column columnId="progress" step="2"></nimble-number-field-column>
         </nimble-table>
     `),
     args: {
