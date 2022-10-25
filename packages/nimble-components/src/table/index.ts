@@ -169,16 +169,28 @@ export class Table extends FoundationElement {
     public set data(value: unknown[]) {
         this._data = value;
         Observable.notify(this, 'data');
-        this._options = { ...this._options, data: this.data };
-        this.update({ ...this.table.initialState });
-        if (this.virtualizer) {
-            this.virtualizer.options = { ...this.virtualizer.options, count: this.data.length };
-            this.virtualizer.calculateRange();
-            this.virtualizer._willUpdate();
-            this.visibleItems = this.virtualizer.getVirtualItems();
-            this.rowContainerHeight = this.virtualizer.getTotalSize();
-        }
+        this._options.data = this.data;
+        this.update(this.table.getState());
         this.refreshRows();
+        this.updateVirtualizer();
+    }
+
+    private updateVirtualizer(): void {
+        if (!this.virtualizer) {
+            return;
+        }
+
+        this.initializeVirtualizer();
+        this.virtualizer._willUpdate();
+        /*
+        this.virtualizer.options.count = this.table.getRowModel().rows.length;
+
+        //this.virtualizer.notify();
+        //this.virtualizer.measure();
+        this.virtualizer.calculateRange();
+        */
+        this.visibleItems = this.virtualizer.getVirtualItems();
+        this.rowContainerHeight = this.virtualizer.getTotalSize();
     }
 
     public get columns(): TableColumn[] {
