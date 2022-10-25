@@ -1,4 +1,4 @@
-import { html, when, repeat, ViewTemplate, ref } from '@microsoft/fast-element';
+import { html, when, repeat, ViewTemplate, ref, slotted } from '@microsoft/fast-element';
 import type { FoundationElementTemplate } from '@microsoft/fast-foundation';
 import type { VirtualItem } from '@tanstack/virtual-core';
 import type { Table, TableHeader } from '.';
@@ -79,5 +79,6 @@ export const template: FoundationElementTemplate<ViewTemplate<Table>> = context 
             </div>
         </div>
     </div>
+    <slot ${slotted('slottedColumns')}></slot>
 </template>
 `;

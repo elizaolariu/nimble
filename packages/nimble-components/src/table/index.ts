@@ -14,11 +14,13 @@ import {
     Column,
     Row,
 } from '@tanstack/table-core';
-import { Virtualizer, VirtualizerOptions, elementScroll, observeElementOffset, observeElementRect, windowScroll, VirtualItem } from '@tanstack/virtual-core';
+import { Virtualizer, VirtualizerOptions, elementScroll, observeElementOffset, observeElementRect, VirtualItem } from '@tanstack/virtual-core';
 import { template } from './template';
 import { styles } from './styles';
 import type { TableCell } from '../table-cell';
 import type { TableRowData } from '../table-row';
+import { TableColumnProviderRegistry } from '../table-column-registry/table-column-registry';
+import type { IColumnProvider } from '../table-column-registry/column-provider';
 
 declare global {
     interface HTMLElementTagNameMap {
@@ -73,6 +75,9 @@ export class Table extends FoundationElement {
     @observable
     public viewportReady = false;
 
+    @observable
+    public slottedColumns: IColumnProvider[] = [];
+
     private readonly table: TanstackTable<unknown>;
     private _data: unknown[] = [];
     private _columns: TableColumn[] = [];
@@ -85,6 +90,7 @@ export class Table extends FoundationElement {
     private _rowContainerHeight = 0;
     private _ready = false;
     private readonly resizeObserver: ResizeObserver;
+    private readonly _columnProviderRegistry = new TableColumnProviderRegistry();
 
     public constructor() {
         super();
@@ -217,6 +223,27 @@ export class Table extends FoundationElement {
     public getColumnTemplate(index: number): ViewTemplate {
         const column = this.columns[index]!;
         return column.cellTemplate!;
+    }
+
+    public registerColumnProvider(columnProvider: IColumnProvider): void {
+        this._columnProviderRegistry.addProvider(columnProvider);
+    }
+
+    private slottedColumnsChanged(): void {
+        if (this.$fastController.isConnected) {
+            this.initializeColumns();
+        }
+    }
+
+    private initializeColumns(): void {
+        this.columns = [];
+        const columns: TableColumn[] = [];
+        for (const columnProvider of this.slottedColumns) {
+            const tableColumn = { columnDataKey: columnProvider.columnId, cellTemplate: columnProvider.getColumnTemplate() } as TableColumn;
+            columns.push(tableColumn);
+        }
+
+        this.columns = columns;
     }
 
     private readonly setSorting = (updater: unknown): void => {
