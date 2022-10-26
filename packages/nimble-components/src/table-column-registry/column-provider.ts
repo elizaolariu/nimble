@@ -4,4 +4,5 @@ import type { TableCell } from '../table-cell';
 export interface IColumnProvider {
     getColumnTemplate: () => ViewTemplate<unknown, TableCell>;
     columnId?: string;
+    columnTitle?: string;
 }

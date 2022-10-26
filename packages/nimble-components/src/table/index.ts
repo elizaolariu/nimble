@@ -240,7 +240,7 @@ export class Table extends FoundationElement {
             const columns: TableColumn[] = [];
             for (const columnProvider of this.slottedColumns) {
                 if (this.isColumnProvider(columnProvider)) {
-                    const tableColumn = { columnDataKey: columnProvider.columnId, cellTemplate: columnProvider.getColumnTemplate() } as TableColumn;
+                    const tableColumn = { columnDataKey: columnProvider.columnId, title: columnProvider.columnTitle, cellTemplate: columnProvider.getColumnTemplate() } as TableColumn;
                     columns.push(tableColumn);
                 }
             }
