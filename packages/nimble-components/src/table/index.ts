@@ -172,7 +172,11 @@ export class Table extends FoundationElement {
         this._options.data = this.data;
         this.update(this.table.getState());
         this.refreshRows();
+
+        // If we update the virtualizer, we have to call a private function.
         this.updateVirtualizer();
+        // If we recreate the virtualizer, we lose our scroll position.
+        //this.recreateVirtualizer();
     }
 
     private updateVirtualizer(): void {
@@ -180,15 +184,22 @@ export class Table extends FoundationElement {
             return;
         }
 
+        this.virtualizer.options.count = this.table.getRowModel().rows.length;
+        // calculateRange is private! If we don't call it, we only show two items in the
+        // table until any scrolling, sort, etc. happens.
+        this.virtualizer.calculateRange();
+
+        this.visibleItems = this.virtualizer.getVirtualItems();
+        this.rowContainerHeight = this.virtualizer.getTotalSize();
+    }
+
+    private recreateVirtualizer(): void {
+        if (!this.virtualizer) {
+            return;
+        }
+
         this.initializeVirtualizer();
         this.virtualizer._willUpdate();
-        /*
-        this.virtualizer.options.count = this.table.getRowModel().rows.length;
-
-        //this.virtualizer.notify();
-        //this.virtualizer.measure();
-        this.virtualizer.calculateRange();
-        */
         this.visibleItems = this.virtualizer.getVirtualItems();
         this.rowContainerHeight = this.virtualizer.getTotalSize();
     }
