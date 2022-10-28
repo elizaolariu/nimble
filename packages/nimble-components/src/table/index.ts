@@ -19,8 +19,7 @@ import { template } from './template';
 import { styles } from './styles';
 import type { TableCell } from '../table-cell';
 import type { TableRowData } from '../table-row';
-import { TableColumnProviderRegistry } from '../table-column-registry/table-column-registry';
-import type { IColumnProvider } from '../table-column-registry/column-provider';
+import type { IColumnProvider } from '../table-column-providers/column-provider';
 
 declare global {
     interface HTMLElementTagNameMap {
@@ -90,7 +89,6 @@ export class Table extends FoundationElement {
     private _rowContainerHeight = 0;
     private _ready = false;
     private readonly resizeObserver: ResizeObserver;
-    private readonly _columnProviderRegistry = new TableColumnProviderRegistry();
 
     public constructor() {
         super();
@@ -223,10 +221,6 @@ export class Table extends FoundationElement {
     public getColumnTemplate(index: number): ViewTemplate {
         const column = this.columns[index]!;
         return column.cellTemplate!;
-    }
-
-    public registerColumnProvider(columnProvider: IColumnProvider): void {
-        this._columnProviderRegistry.addProvider(columnProvider);
     }
 
     private slottedColumnsChanged(): void {

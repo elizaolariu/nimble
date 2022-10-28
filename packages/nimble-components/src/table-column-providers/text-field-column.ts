@@ -1,7 +1,7 @@
 import { html, ViewTemplate } from '@microsoft/fast-element';
 import { DesignSystem } from '@microsoft/fast-foundation';
 import type { TableCell } from '../table-cell';
-import type { IColumnProvider } from '../table-column-registry/column-provider';
+import type { IColumnProvider } from './column-provider';
 import { BaseColumn } from './base-column';
 
 /**
