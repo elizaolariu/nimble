@@ -65,7 +65,7 @@ export const template: FoundationElementTemplate<ViewTemplate<Table>> = context 
         </div>
         <div class="table-viewport" ${ref('viewport')}>
             <div class="table-body" ${ref('rowContainer')} style="height: ${x => x.rowContainerHeight}px">
-                ${repeat(x => x.visibleItems, html<VirtualItem<TableRow>>`
+                ${repeat(x => x.visibleItems, html<VirtualItem<unknown>>`
                     <${context.tagFor(TableRow)}
                         :rowData="${(x, c) => (c.parent as Table).tableData[x.index]}"
                         style="
