@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
-import { ComboboxAutocomplete, DropdownAppearance } from '../../../public-api';
+import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import { ComboboxAutocomplete, DropdownAppearance, processUpdates } from '../../../public-api';
 import type { BooleanValueOrAttribute } from '../../utilities/template-value-helpers';
 import { Combobox, NimbleComboboxDirective } from '../nimble-combobox.directive';
 import { NimbleComboboxModule } from '../nimble-combobox.module';
@@ -16,7 +16,12 @@ describe('Nimble combobox page object', () => {
     describe('in async test', () => {
         @Component({
             template: `
-                <nimble-combobox #combobox></nimble-combobox>
+                <nimble-combobox #combobox>
+                    <nimble-list-option value="one">One</nimble-list-option>
+                    <nimble-list-option value="two">Two</nimble-list-option>
+                    <nimble-list-option value="three">Three</nimble-list-option>
+                    <nimble-list-option value="four" disabled>Four</nimble-list-option>
+                </nimble-combobox>
             `
         })
         class TestHostComponent {
@@ -45,9 +50,16 @@ describe('Nimble combobox page object', () => {
             expect(pageObject).toBeTruthy();
         });
 
+        it('clearText() removes text in async test', async () => {
+            await pageObject.setText('two');
+            await pageObject.clearText();
+
+            expect(nativeElement.value).toBe('');
+        });
+
         it('setText() affects element in async test', async () => {
             await pageObject.setText('two');
-            
+
             expect(nativeElement.value).toBe('Two');
         });
 
@@ -56,5 +68,38 @@ describe('Nimble combobox page object', () => {
 
             expect(nativeElement.value).toBe('Two');
         }));
+
+        it('setText() clears existing text in async test', async () => {
+            await pageObject.setText('one');
+            await pageObject.setText('two');
+
+            expect(nativeElement.value).toBe('Two');
+        });
+
+        it('clickInput() opens menu in async test', async () => {
+            expect(nativeElement.open).toBeFalse();
+
+            await pageObject.clickInput();
+
+            expect(nativeElement.open).toBeTrue();
+        });
+
+        it('selectText() selects text in async test', async () => {
+            await pageObject.setText('one');
+            await pageObject.selectText();
+            await pageObject.pressKeys('foo');
+
+            expect(nativeElement.value).toBe('foo');
+        });
+
+        it('pressKeys(ESC) closes menu in async test', async () => {
+            await pageObject.clickInput();
+
+            expect(nativeElement.open).toBeTrue();
+
+            await pageObject.pressKeys('{Escape}');
+
+            expect(nativeElement.open).toBeFalse();
+        });
     });
 });
