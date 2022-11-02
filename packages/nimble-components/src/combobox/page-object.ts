@@ -12,11 +12,18 @@ export class PageObject {
         this.user = userEvent.setup();
     }
 
+    public async clearText(): Promise<void> {
+        await this.selectText();
+        await this.pressKeys('{Delete}');
+        processUpdates();
+    }
+
     public async setText(text: string): Promise<void> {
         if (text !== '') {
+            await this.clearText();
             await this.user.type(this.combobox, text);
         } else {
-            throw new Error('Empty text is not valid input for this method');
+            throw new Error('Empty text is not valid input for this method. Call clearText() instead.');
         }
         processUpdates();
     }
