@@ -1,0 +1,10 @@
+{
+    "description": "Dummy package.json for build deployment. DO NOT MODIFY",
+    "name": "example-client-app",
+    "version": "0.0.0",
+    "private":true,
+    "files": [
+        "*",
+        "!*.tgz"
+    ]
+}

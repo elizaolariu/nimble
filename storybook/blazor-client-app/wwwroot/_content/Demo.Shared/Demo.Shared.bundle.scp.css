@@ -1,0 +1,107 @@
+/* _content/Demo.Shared/Pages/ComponentsDemo.razor.rz.scp.css */
+.root[b-0i690ds0or] {
+    background-color: var(--ni-nimble-application-background-color);
+}
+
+.content[b-0i690ds0or] {
+    font: var(--ni-nimble-body-font);
+    overflow-y: auto;
+}
+
+.container-label[b-0i690ds0or] {
+    font: var(--ni-nimble-group-header-font);
+    color: var(--ni-nimble-group-header-font-color);
+    padding-bottom: var(--ni-nimble-standard-padding);
+}
+
+p[b-0i690ds0or], a[b-0i690ds0or] {
+    color: var(--ni-nimble-control-label-font-color);
+}
+
+.container[b-0i690ds0or] {
+    background-color: var(--ni-nimble-application-background-color);
+    display: inline-flex;
+    justify-content: left;
+    flex-direction: column;
+    padding: 0px 2px 0px 10px;
+}
+
+.sub-container[b-0i690ds0or] {
+    margin: var(--ni-nimble-standard-padding);
+}
+
+.sub-container > *[b-0i690ds0or] {
+    padding-right: var(--ni-nimble-standard-padding);
+}
+
+.theme-select[b-0i690ds0or] {
+    display: block;
+    width: 150px;
+    min-width: unset;
+}
+
+.drawer-location-select[b-0i690ds0or] {
+    width: 200px;
+}
+
+example-header[b-0i690ds0or] {
+    display: block;
+}
+
+[b-0i690ds0or] nimble-toolbar::part(positioning-region) {
+    background-color: var(--ni-nimble-section-background-color);
+}
+
+.card-button-content[b-0i690ds0or] {
+    display: flex;
+    margin: var(--ni-nimble-standard-padding);
+}
+
+.drawer-footer[b-0i690ds0or] {
+    gap: var(--ni-nimble-standard-padding);
+}
+
+.dialog-header[b-0i690ds0or] {
+    font: var(--ni-nimble-title-font);
+    color: var(--ni-nimble-title-font-color);
+}
+
+.dialog-content[b-0i690ds0or] {
+    color: var(--ni-nimble-body-font-color);
+}
+/* _content/Demo.Shared/Shared/ExampleHeader.razor.rz.scp.css */
+.header[b-rgnp6sgrg7] {
+    --example-client-header-height: 48px;
+    background-color: var(--ni-nimble-header-background-color);
+    display: flex;
+    justify-content: flex-end;
+    height: var(--example-client-header-height);
+    flex-shrink: 0;
+}
+
+[b-rgnp6sgrg7] .user-settings-drawer {
+    padding: var(--ni-nimble-standard-padding);
+    display: flex;
+    flex-direction: column;
+}
+
+[b-rgnp6sgrg7] .theme-select {
+    width: 150px;
+    min-width: unset;
+}
+
+[b-rgnp6sgrg7] .close-button {
+    align-self: flex-end;
+}
+
+.button-container[b-rgnp6sgrg7] {
+    display: flex;
+    align-items: center;
+}
+/* _content/Demo.Shared/Shared/MainLayout.razor.rz.scp.css */
+.root[b-kh527w9b06] {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--ni-nimble-application-background-color);
+}
