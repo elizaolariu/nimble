@@ -28,16 +28,15 @@ const metadata: Meta<TableArgs> = {
             <nimble-text-field-column columnId="lastName" columnTitle="Last Name"></nimble-text-field-column>
             <nimble-number-field-column ${ref('ageColumn')} columnId="age" columnTitle="Age" step="1"></nimble-number-field-column>
             <nimble-text-field-column columnId="visits" columnTitle="Visits"></nimble-text-field-column>
-            ${when(x => x.statusVisible, html`
-                <nimble-text-field-column columnId="status" columnTitle="Status"></nimble-text-field-column>
-            `)}
+            <nimble-text-field-column columnId="status" columnTitle="Status"></nimble-text-field-column>
             <nimble-number-field-column columnId="progress" columnTitle="Progress" step="2"></nimble-number-field-column>
+            <nimble-text-field-column columnId="createdAt" columnTitle="Created At"></nimble-text-field-column>
         </nimble-table>
         <br>
         <nimble-button ${ref('button')} appearance="block" @click="${x => x.changeStep(x.ageColumn, x.button)}">Age step: ${x => x.ageColumn.step}</nimble-button>
     `),
     args: {
-        data: makeData(2000),
+        data: makeData(10000),
         columns: getColumns(),
         changeStep: (ageColumn: NumberFieldColumn, button: Button) => {
             const newStep = Math.floor(Math.random() * 10);
