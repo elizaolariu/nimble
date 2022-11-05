@@ -20,10 +20,10 @@ const metadata: Meta<TableArgs> = {
     title: 'Table',
     // prettier-ignore
     render: createUserSelectedThemeStory(html`
-        <nimble-table style="max-height: 500px"
+        <nimble-table
             :data="${x => x.data}"
         >
-
+            <nimble-text-field-column columnId="id" columnTitle="ID"></nimble-text-field-column>
             <nimble-text-field-column columnId="firstName" columnTitle="First Name"></nimble-text-field-column>
             <nimble-text-field-column columnId="lastName" columnTitle="Last Name"></nimble-text-field-column>
             <nimble-number-field-column ${ref('ageColumn')} columnId="age" columnTitle="Age" step="1"></nimble-number-field-column>
