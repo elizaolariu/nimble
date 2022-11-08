@@ -1,19 +1,22 @@
+import type { WaferMapDataType } from '../types';
+import type { WaferMapDie } from './WaferMapDie';
+import { WaferMapMetadata } from './WaferMapMetadata';
 import { WaferMapRenderingOptions } from './WaferMapRenderingOptions';
 
 /**
- * WafermapRenderingObject
+ * WaferMapRenderingObject
  */
 export class WaferMapRenderingObject {
-    // dice: WafermapDie[];
-    // metadata: WafermapMetadata = new WafermapMetadata();
-    // jobId: string;
+    public dice!: WaferMapDie[];
+    public metadata: WaferMapMetadata = new WaferMapMetadata();
+    public jobId!: string;
     public renderingOptions: WaferMapRenderingOptions;
-    // waferDataType: WafermapDataType;
-    // colorsScale: string[] = null;
+    public waferDataType!: WaferMapDataType;
+    public colorsScale: string[] | null = null;
 
     public constructor() {
         this.renderingOptions = new WaferMapRenderingOptions();
     }
 
-    // get isEmpty(): boolean { return !this.dice || !(this.dice.length > 0); }
+    public get isEmpty(): boolean { return !this.dice || !(this.dice.length > 0); }
 }

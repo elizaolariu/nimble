@@ -4,8 +4,10 @@ import {
     FoundationElement
 } from '@microsoft/fast-foundation';
 import { template } from '../theme-provider/template';
+import type { WaferMapColorsScale } from './data-types/WaferMapColorsScale';
 import type { WaferMapRenderingObject } from './data-types/WaferMapRenderingObject';
 import { styles } from './styles';
+import type { WaferColorByOptions } from './types';
 
 declare global {
     interface HTMLElementTagNameMap {
@@ -22,10 +24,20 @@ export class WaferMap extends FoundationElement {
     })
     public waferData!: WaferMapRenderingObject;
 
-    // colorBy: WaferColorByOptions = 0;
-    // containerSize: WidgetItemSize = "big";
-    // highlightedValues!: string[];
-    // colorsScale: WafermapColorsScale | undefined;
+    @attr({
+        attribute: 'colorBy'
+    })
+    public colorBy: WaferColorByOptions = 0;
+
+    @attr({
+        attribute: 'highlightedValues'
+    })
+    public highlightedValues!: string[];
+
+    @attr({
+        attribute: 'colorsScale'
+    })
+    public colorsScale!: WaferMapColorsScale;
 }
 
 const nimbleWaferMap = WaferMap.compose({
