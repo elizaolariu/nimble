@@ -1,3 +1,4 @@
+import { attr } from '@microsoft/fast-element';
 import {
     DesignSystem,
     FoundationElement
@@ -16,7 +17,11 @@ declare global {
  * A nimble-styled WaferMap
  */
 export class WaferMap extends FoundationElement {
-    public waferData: WaferMapRenderingObject | undefined;
+    @attr({
+        attribute: 'waferData'
+    })
+    public waferData!: WaferMapRenderingObject;
+
     // colorBy: WaferColorByOptions = 0;
     // containerSize: WidgetItemSize = "big";
     // highlightedValues!: string[];
